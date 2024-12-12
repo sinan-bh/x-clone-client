@@ -16,7 +16,7 @@ const NavBar: React.FC = () => {
         >
           For you
           {activeTab === "forYou" && (
-            <div className="absolute left-0 right-0 h-1 bg-blue-500 rounded-t-md top-full"></div>
+            <div className="absolute  left-0 right-0 h-1 bg-blue-500 rounded-t-md  top-9"></div>
           )}
         </div>
         <div
@@ -27,7 +27,7 @@ const NavBar: React.FC = () => {
         >
           Following
           {activeTab === "following" && (
-            <div className="absolute left-0 right-0 h-1 bg-blue-500 rounded-t-md top-full"></div>
+            <div className="absolute left-0 right-0 h-1 bg-blue-500 rounded-t-md top-9"></div>
           )}
         </div>
       </div>

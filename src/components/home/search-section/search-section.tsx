@@ -1,7 +1,6 @@
 const SearchSection: React.FC = () => {
   return (
     <div className="bg-black text-white  p-4 space-y-6 border-l border-gray-600">
-      {/* Search Bar */}
       <div className="relative">
         <input
           type="text"
@@ -23,8 +22,7 @@ const SearchSection: React.FC = () => {
         </svg>
       </div>
 
-      {/* Subscribe to Premium */}
-      <div className="overflow-y-auto">
+      <div className="hide-scrollbar overflow-y-scroll max-h-[85vh]">
         <div className="bg-black rounded-2xl p-4 flex flex-col justify-start border border-gray-600 ">
           <h2 className="text-lg font-bold mb-2">Subscribe to Premium</h2>
           <p className="text-sm text-gray-400 mb-4">
@@ -51,6 +49,21 @@ const SearchSection: React.FC = () => {
                 category: "Entertainment · Trending",
                 topic: "#BoycottBollywood",
                 posts: "6,343 posts",
+              },
+              {
+                category: "Trending in India",
+                topic: "Magnus",
+                posts: "10.5K posts",
+              },
+              {
+                category: "Trending in India",
+                topic: "Magnus",
+                posts: "10.5K posts",
+              },
+              {
+                category: "Trending in India",
+                topic: "Magnus",
+                posts: "10.5K posts",
               },
               {
                 category: "Trending in India",
