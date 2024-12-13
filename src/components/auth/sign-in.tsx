@@ -1,63 +1,41 @@
 "use client";
 
+import { loginUser } from "@/lib/store/features/auth-slice";
+import { useAppDispatch } from "@/lib/store/hook";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
-export type Users =
-  | [
-      {
-        userName: string;
-        email: string;
-        password: string;
-      }
-    ]
-  | undefined;
+export type Users = {
+  userName: string;
+  email: string;
+  password: string;
+}[];
 
 const SignIn = () => {
+  const dispatch = useAppDispatch();
   const router = useRouter();
-  const [loginUser, setLoginUser] = useState<string>("");
+  const [userLogin, setUserLogin] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     setError(null);
 
-    if (!loginUser || !password) {
+    if (!userLogin || !password) {
       setError("Please enter both username/email and password.");
       return;
     }
 
     try {
-      const storedUser = localStorage.getItem("x-users");
-
-      if (!storedUser) {
-        setError("No user found. Please register first.");
-        return;
-      }
-
-      const users: Users = JSON.parse(storedUser);
-
-      const user = users?.find(
-        (u) =>
-          (u.userName === loginUser || u.email === loginUser) &&
-          u.password === password
-      );
-
-      if (
-        (loginUser === user?.userName || loginUser === user?.email) &&
-        password === user?.password
-      ) {
-        alert("Sign In Successful");
-        localStorage.setItem("loginedUser", JSON.stringify(user));
-        router.push(`/home`);
-      } else {
-        setError("Invalid username/email or password.");
-      }
-    } catch (err) {
-      console.error("Error reading user data from localStorage:", err);
-      setError("An unexpected error occurred. Please try again.");
+      await dispatch(loginUser({ loginField: userLogin, password })).unwrap();
+      localStorage.setItem("loginedUser", JSON.stringify(true));
+      router.push(`/home`);
+      alert("Sign In Successful");
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
+      setError(err && "Invalid username/email or password.");
     }
   };
 
@@ -71,19 +49,19 @@ const SignIn = () => {
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label
-              htmlFor="loginUser"
+              htmlFor="userLogin"
               className="block text-gray-500 font-medium"
             >
               Username or Email
             </label>
             <input
               type="text"
-              id="loginUser"
+              id="userLogin"
               className="w-full p-3 mt-2 border text-black border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-800"
               placeholder="Enter your username or email"
-              value={loginUser}
+              value={userLogin}
               onChange={(e) => {
-                setLoginUser(e.target.value);
+                setUserLogin(e.target.value);
                 setError(null);
               }}
             />

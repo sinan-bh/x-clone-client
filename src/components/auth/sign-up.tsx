@@ -1,17 +1,18 @@
 "use client";
 
+import { registerUser } from "@/lib/store/features/auth-slice";
+import { useAppDispatch } from "@/lib/store/hook";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
 const Register = () => {
+  const dispatch = useAppDispatch();
   const router = useRouter();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     userName: "",
     password: "",
-    createdAt: new Date(),
-    updatedAt: new Date(),
     profilePicture: "",
   });
 
@@ -22,7 +23,7 @@ const Register = () => {
     setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const { name, email, userName, password } = formData;
@@ -33,15 +34,17 @@ const Register = () => {
     }
 
     setError(null);
-    formData.profilePicture = formData.name.charAt(0).toUpperCase();
-    const users = JSON.parse(localStorage.getItem("x-users") || "[]");
-    users.push(formData);
-    localStorage.setItem("x-users", JSON.stringify(users));
 
-    console.log("Registration successful:", formData);
-    alert("Sign Up Completed");
-    router.push("/signin");
+    try {
+      await dispatch(registerUser(formData)).unwrap();
+      alert("Sign Up Completed");
+      router.push("/signin");
+    } catch (err) {
+      setError(err as string);
+    }
   };
+
+  console.log(error);
 
   return (
     <div className="min-h-screen flex justify-center items-center bg-gray-800">
