@@ -34,7 +34,6 @@ const SearchSection: React.FC = () => {
           </button>
         </div>
 
-        {/* What's Happening */}
         <div className="border border-gray-600 rounded-2xl p-4 mt-4">
           <h2 className="text-lg font-bold mb-4">What&apos;s happening</h2>
           <div className="space-y-4">
