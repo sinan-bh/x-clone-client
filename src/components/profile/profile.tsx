@@ -3,6 +3,8 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { useParams } from "next/navigation";
+import axios from "axios";
+import Cookies from "js-cookie";
 
 type User = {
   createdAt: string;
@@ -12,6 +14,10 @@ type User = {
   profilePicture: string;
   updatedAt: string;
   userName: string;
+  followers: number;
+  following: number;
+  bio?: string;
+  tweets: string[];
 };
 
 const ProfilePage: React.FC = () => {
@@ -20,15 +26,38 @@ const ProfilePage: React.FC = () => {
   );
   const [isOwnProfile, setIsOwnProfile] = useState(false);
   const [userDetails, setUserDetails] = useState<User | null>(null);
+  //   const [tweets, setTweets] = useState<string[]>([]);
   const { profileId }: { profileId: string } = useParams();
 
+  // Fetch the user details and tweets
   useEffect(() => {
-    const storedUser = localStorage.getItem("loginedUser");
-    if (storedUser) {
-      const user: User = JSON.parse(storedUser);
-      setUserDetails(user);
-      setIsOwnProfile(profileId === user.userName);
-    }
+    // Fetch user data from the API
+    const currentUser = Cookies.get("user");
+    const user = JSON.parse(currentUser || "{}");
+    const fetchUserData = async () => {
+      try {
+        const { data } = await axios.get(
+          `http://localhost:3001/api/user/${profileId}`
+        );
+        setUserDetails(data?.data);
+        setIsOwnProfile(user.userName === profileId);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+
+    // Fetch tweets from the API
+    // const fetchTweets = async () => {
+    //   try {
+    //     const response = await axios.get(`/api/users/${profileId}/tweets`);
+    //     setTweets(response.data.tweets);
+    //   } catch (error) {
+    //     console.error("Error fetching tweets:", error);
+    //   }
+    // };
+
+    fetchUserData();
+    // fetchTweets();
   }, [profileId]);
 
   if (!userDetails) {
@@ -48,24 +77,22 @@ const ProfilePage: React.FC = () => {
         <div className="relative">
           <div className="h-56 bg-gray-300"></div>
           {userDetails.profilePicture ? (
-            <div className="absolute -bottom-20 bg-green-700  text-white text-3xl font-extrabold flex justify-center items-center left-6 w-40 h-40 border-4 border-white rounded-full overflow-hidden">
-              {userDetails.profilePicture}
-            </div>
-          ) : (
-            <div className="absolute -bottom-20 left-6 w-40 h-40 border-4 border-white rounded-full overflow-hidden">
+            <div className="absolute -bottom-20 bg-green-700 text-white text-3xl font-extrabold flex justify-center items-center left-6 w-40 h-40 border-4 border-white rounded-full overflow-hidden">
               <Image
-                src={"https://via.placeholder.com/150"}
+                src={userDetails.profilePicture}
                 alt="Profile Picture"
                 layout="fill"
                 objectFit="cover"
               />
             </div>
+          ) : (
+            <div className="absolute -bottom-20 left-6 w-40 h-40 border-4 border-white rounded-full overflow-hidden flex justify-center items-center text-5xl bg-gray-700 text-white font-bold">
+              {userDetails.name[0]}
+            </div>
           )}
         </div>
         <div className="flex justify-end m-4 cursor-pointer">
-          <div
-            className={`bg-white text-black hover:bg-gray-200 border py-2 rounded-2xl px-10 text-sm`}
-          >
+          <div className="bg-white text-black hover:bg-gray-200 border py-2 rounded-2xl px-10 text-sm">
             {isOwnProfile ? "Edit Profile" : "Follow"}
           </div>
         </div>
@@ -73,14 +100,18 @@ const ProfilePage: React.FC = () => {
         <div className="mt-12 px-6">
           <h2 className="text-xl font-bold">{userDetails.name}</h2>
           <p className="text-gray-600">@{userDetails.userName}</p>
-          <p className="mt-2">Building cool stuff on the internet.</p>
+          <p className="mt-2">
+            {userDetails.bio || "Building cool stuff on the internet."}
+          </p>
 
           <div className="flex gap-4 mt-4">
             <span>
-              <span className="font-bold">120</span> Following
+              <span className="font-bold">{userDetails.following}</span>{" "}
+              Following
             </span>
             <span>
-              <span className="font-bold">500</span> Followers
+              <span className="font-bold">{userDetails.followers}</span>{" "}
+              Followers
             </span>
           </div>
         </div>
@@ -124,36 +155,35 @@ const ProfilePage: React.FC = () => {
         </div>
 
         <div className="mt-2">
-          {[...Array(5)].map((_, index) => (
-            <div
-              key={index}
-              className="bg-black border-b p-4 shadow mb-4 hover:shadow-lg transition"
-            >
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 rounded-full overflow-hidden">
-                  <Image
-                    src={"https://via.placeholder.com/48"}
-                    alt="Avatar"
-                    objectFit="cover"
-                    width={150}
-                    height={150}
-                  />
-                </div>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <h3 className="font-bold">{userDetails.name}</h3>
-                    <span className="text-gray-500 text-sm">
-                      @{userDetails.userName}
-                    </span>
-                    <span className="text-gray-500 text-sm">- 2h</span>
+          {/* {activeTab === "tweets" &&
+            tweets?.map((tweet, index) => (
+              <div
+                key={index}
+                className="bg-black border-b p-4 shadow mb-4 hover:shadow-lg transition"
+              >
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 rounded-full overflow-hidden">
+                    <Image
+                      src={"https://via.placeholder.com/48"}
+                      alt="Avatar"
+                      objectFit="cover"
+                      width={150}
+                      height={150}
+                    />
                   </div>
-                  <p className="mt-1 text-gray-700">
-                    This is a sample tweet content for demonstration purposes.
-                  </p>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <h3 className="font-bold">{userDetails.name}</h3>
+                      <span className="text-gray-500 text-sm">
+                        @{userDetails.userName}
+                      </span>
+                      <span className="text-gray-500 text-sm">- 2h</span>
+                    </div>
+                    <p className="mt-1 text-gray-700">{tweet}</p>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))} */}
         </div>
       </div>
     </div>

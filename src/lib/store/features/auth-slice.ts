@@ -50,14 +50,16 @@ export const loginUser = createAsyncThunk(
       const { data } = response;
       const userData = data.data;
 
+      console.log(userData);
+
       Cookies.set(
         "user",
         JSON.stringify({
-          userName: userData.userName,
-          name: userData.name,
-          email: userData.email,
+          userName: userData.user.userName,
+          name: userData.user.name,
+          email: userData.user.email,
           token: userData.token,
-          id: userData._id,
+          id: userData.user._id,
         }),
         { expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) }
       );
