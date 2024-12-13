@@ -1,18 +1,33 @@
+"use client";
 import React from "react";
 import {
   FaHome,
   FaSearch,
   FaBell,
   FaEnvelope,
-  FaUserFriends,
   FaUser,
   FaFeatherAlt,
 } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 import { BsThreeDots, BsPersonCircle } from "react-icons/bs";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+
+export type User = {
+  userName: string;
+  email?: string;
+  password?: string;
+};
 
 const Sidebar: React.FC = () => {
+  const router = useRouter();
+  const handleProfile = () => {
+    const storedUser = localStorage.getItem("loginedUser");
+
+    const user: User = JSON.parse(storedUser || "");
+    router.push(`/${user?.userName}`);
+  };
+
   return (
     <div className="flex flex-col py-4 justify-between max-w-60 items-end pr-5 border-r border-gray-600 h-screen">
       <Link href={"/home"} className="text-4xl font-bold pr-1">
@@ -31,9 +46,13 @@ const Sidebar: React.FC = () => {
         <Link href={"/notification"}>
           <FaBell className="text-2xl cursor-pointer hover:text-gray-500" />
         </Link>
-        <FaEnvelope className="text-2xl cursor-pointer hover:text-gray-500" />
-        <FaUserFriends className="text-2xl cursor-pointer hover:text-gray-500" />
-        <FaUser className="text-2xl cursor-pointer hover:text-gray-500" />
+        <Link href={"/messages"}>
+          <FaEnvelope className="text-2xl cursor-pointer hover:text-gray-500" />
+        </Link>
+        <FaUser
+          className="text-2xl cursor-pointer hover:text-gray-500"
+          onClick={handleProfile}
+        />
         <BsThreeDots className="text-2xl cursor-pointer hover:text-gray-500" />
       </nav>
       <div className="flex items-center justify-center bg-gray-200 text-black text-2xl w-12 h-10 rounded-full cursor-pointer hover:bg-gray-300">
