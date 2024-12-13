@@ -3,13 +3,15 @@
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
-type User = [
-  {
-    userName: string;
-    email: string;
-    password: string;
-  }
-];
+export type Users =
+  | [
+      {
+        userName: string;
+        email: string;
+        password: string;
+      }
+    ]
+  | undefined;
 
 const SignIn = () => {
   const router = useRouter();
@@ -35,10 +37,9 @@ const SignIn = () => {
         return;
       }
 
-      const users: User = JSON.parse(storedUser);
-      console.log(users);
+      const users: Users = JSON.parse(storedUser);
 
-      const user = users.find(
+      const user = users?.find(
         (u) =>
           (u.userName === loginUser || u.email === loginUser) &&
           u.password === password
@@ -49,6 +50,7 @@ const SignIn = () => {
         password === user?.password
       ) {
         alert("Sign In Successful");
+        localStorage.setItem("loginedUser", JSON.stringify(user));
         router.push(`/home`);
       } else {
         setError("Invalid username/email or password.");
