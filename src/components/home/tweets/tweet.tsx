@@ -15,6 +15,7 @@ interface TweetProps {
   username: string;
   content: string;
   profilePic: string;
+  post?: string;
   likesCount: number;
   commentsCount: number;
   repostsCount: number;
@@ -24,6 +25,7 @@ const Tweet: React.FC<TweetProps> = ({
   username,
   content,
   profilePic,
+  post,
   likesCount,
   commentsCount,
   repostsCount,
@@ -61,6 +63,17 @@ const Tweet: React.FC<TweetProps> = ({
           <p className="text-xs text-gray-500">2h ago</p>
         </div>
         <p className="mt-2 text-sm">{content}</p>
+        {post && (
+          <div>
+            <Image
+              src={post || ""}
+              alt="no post"
+              width={100}
+              height={100}
+              className="h-full w-full rounded-3xl"
+            />
+          </div>
+        )}
         <div className="flex justify-around mt-4 text-gray-400">
           <button
             onClick={handleLike}

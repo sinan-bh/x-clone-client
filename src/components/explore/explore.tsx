@@ -8,7 +8,7 @@ const Explore: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-black text-white flex">
-      <div className="w-2/3 px-6 py-4">
+      <div className="w-full px-6 py-4">
         <div>
           <div>
             <svg
@@ -31,7 +31,7 @@ const Explore: React.FC = () => {
             />
           </div>
         </div>
-        <header className="border-b border-gray-700 pb-4 mb-6">
+        <header className="border-b border-gray-700 pb-4 pt-7 mb-6 max-w-full hide-scrollbar overflow-x-auto text-nowrap">
           <nav className="flex justify-between space-x-4 mt-2">
             <div
               className={`relative text-gray-400 font-medium cursor-pointer ${
@@ -120,8 +120,7 @@ const Explore: React.FC = () => {
         </div>
       </div>
 
-      {/* Right Section - Who to Follow */}
-      <aside className="w-1/3 px-6 py-4 border-l border-gray-700">
+      <aside className="w-1/3 px-6 py-4 border-l border-gray-700 hidden md:block">
         <h2 className="text-xl font-bold mb-4">Who to follow</h2>
 
         <div className="mb-4 flex items-center justify-between">

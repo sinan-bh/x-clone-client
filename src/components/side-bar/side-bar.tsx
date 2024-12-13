@@ -28,7 +28,9 @@ const Sidebar: React.FC = () => {
         <Link href={"/explore"}>
           <FaSearch className="text-2xl cursor-pointer hover:text-gray-500" />
         </Link>
-        <FaBell className="text-2xl cursor-pointer hover:text-gray-500" />
+        <Link href={"/notification"}>
+          <FaBell className="text-2xl cursor-pointer hover:text-gray-500" />
+        </Link>
         <FaEnvelope className="text-2xl cursor-pointer hover:text-gray-500" />
         <FaUserFriends className="text-2xl cursor-pointer hover:text-gray-500" />
         <FaUser className="text-2xl cursor-pointer hover:text-gray-500" />
