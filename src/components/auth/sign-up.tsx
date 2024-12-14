@@ -4,6 +4,7 @@ import { registerUser } from "@/lib/store/features/auth-slice";
 import { useAppDispatch } from "@/lib/store/hook";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
+import Link from "next/link";
 
 const Register = () => {
   const dispatch = useAppDispatch();
@@ -129,9 +130,9 @@ const Register = () => {
         </form>
         <p className="text-center mt-4 text-gray-600">
           Already have an account?{" "}
-          <a href="/signin" className="text-blue-600 hover:underline">
+          <Link href="/signin" className="text-blue-600 hover:underline">
             Sign In
-          </a>
+          </Link>
         </p>
       </div>
     </div>

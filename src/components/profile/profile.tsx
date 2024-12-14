@@ -3,48 +3,34 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { useParams } from "next/navigation";
-import axios from "axios";
 import Cookies from "js-cookie";
-
-type User = {
-  createdAt: string;
-  email: string;
-  name: string;
-  password: string;
-  profilePicture: string;
-  updatedAt: string;
-  userName: string;
-  followers: number;
-  following: number;
-  bio?: string;
-  tweets: string[];
-};
+import { LuCalendarClock } from "react-icons/lu";
+import EditProfileModal from "./edit-profile";
+import { useAppDispatch, useAppSelector } from "@/lib/store/hook";
+import {
+  fetchUserData,
+  setIsOwnProfile,
+} from "@/lib/store/features/user-slice";
 
 const ProfilePage: React.FC = () => {
+  const dispatch = useAppDispatch();
   const [activeTab, setActiveTab] = useState<"tweets" | "replies" | "likes">(
     "tweets"
   );
-  const [isOwnProfile, setIsOwnProfile] = useState(false);
-  const [userDetails, setUserDetails] = useState<User | null>(null);
-  //   const [tweets, setTweets] = useState<string[]>([]);
+  const { userDetails, isOwnProfile } = useAppSelector((state) => state.user);
+  const [showModal, setShowModal] = useState(false);
+
   const { profileId }: { profileId: string } = useParams();
 
-  // Fetch the user details and tweets
+  console.log(userDetails);
+
   useEffect(() => {
-    // Fetch user data from the API
     const currentUser = Cookies.get("user");
     const user = JSON.parse(currentUser || "{}");
-    const fetchUserData = async () => {
-      try {
-        const { data } = await axios.get(
-          `http://localhost:3001/api/user/${profileId}`
-        );
-        setUserDetails(data?.data);
-        setIsOwnProfile(user.userName === profileId);
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-      }
-    };
+
+    dispatch(fetchUserData(profileId));
+
+    dispatch(setIsOwnProfile(user.userName === profileId));
 
     // Fetch tweets from the API
     // const fetchTweets = async () => {
@@ -56,9 +42,15 @@ const ProfilePage: React.FC = () => {
     //   }
     // };
 
-    fetchUserData();
     // fetchTweets();
-  }, [profileId]);
+  }, [profileId, dispatch]);
+
+  const handleEditProfile = () => setShowModal(true);
+  const handleCloseModal = () => setShowModal(false);
+
+  const handleFollow = async () => {
+    alert("followed");
+  };
 
   if (!userDetails) {
     return (
@@ -71,15 +63,24 @@ const ProfilePage: React.FC = () => {
   return (
     <div className="h-screen text-white">
       <div className="bg-transparent text-white py-4 px-6 flex items-center justify-between">
-        <h1 className="text-xl font-bold">Profile</h1>
+        <h1 className="text-xl font-bold">{profileId}</h1>
       </div>
       <div className="h-full hide-scrollbar overflow-y-auto">
         <div className="relative">
-          <div className="h-56 bg-gray-300"></div>
-          {userDetails.profilePicture ? (
+          <div className="h-56 bg-gray-300">
+            {userDetails.bgImage && (
+              <Image
+                src={userDetails.bgImage}
+                alt="Profile Picture"
+                layout="fill"
+                objectFit="cover"
+              />
+            )}
+          </div>
+          {userDetails?.profilePicture ? (
             <div className="absolute -bottom-20 bg-green-700 text-white text-3xl font-extrabold flex justify-center items-center left-6 w-40 h-40 border-4 border-white rounded-full overflow-hidden">
               <Image
-                src={userDetails.profilePicture}
+                src={userDetails?.profilePicture}
                 alt="Profile Picture"
                 layout="fill"
                 objectFit="cover"
@@ -87,30 +88,45 @@ const ProfilePage: React.FC = () => {
             </div>
           ) : (
             <div className="absolute -bottom-20 left-6 w-40 h-40 border-4 border-white rounded-full overflow-hidden flex justify-center items-center text-5xl bg-gray-700 text-white font-bold">
-              {userDetails.name[0]}
+              {userDetails?.name ? userDetails?.name[0].toUpperCase() : ""}
             </div>
           )}
         </div>
         <div className="flex justify-end m-4 cursor-pointer">
-          <div className="bg-white text-black hover:bg-gray-200 border py-2 rounded-2xl px-10 text-sm">
+          <div
+            className="bg-white text-black hover:bg-gray-200 border py-2 rounded-2xl px-10 text-sm"
+            onClick={isOwnProfile ? handleEditProfile : handleFollow}
+          >
             {isOwnProfile ? "Edit Profile" : "Follow"}
           </div>
         </div>
 
         <div className="mt-12 px-6">
-          <h2 className="text-xl font-bold">{userDetails.name}</h2>
-          <p className="text-gray-600">@{userDetails.userName}</p>
-          <p className="mt-2">
-            {userDetails.bio || "Building cool stuff on the internet."}
-          </p>
+          <h2 className="text-xl font-bold">{userDetails?.name}</h2>
+          <p className="text-gray-600">@{userDetails?.userName}</p>
+          <div className="text-gray-600 mt-3 text-lg flex items-center">
+            <LuCalendarClock />
+            <span className="ml-2">Joined </span>
+            <span className="ml-2">
+              {new Date(userDetails?.createdAt).toLocaleString("en-US", {
+                month: "long",
+                year: "numeric",
+              })}
+            </span>
+          </div>
+          <p className="mt-2">{userDetails?.bio}</p>
 
           <div className="flex gap-4 mt-4">
             <span>
-              <span className="font-bold">{userDetails.following}</span>{" "}
+              <span className="font-bold">
+                {userDetails?.following?.length}
+              </span>{" "}
               Following
             </span>
             <span>
-              <span className="font-bold">{userDetails.followers}</span>{" "}
+              <span className="font-bold">
+                {userDetails?.followers?.length}
+              </span>{" "}
               Followers
             </span>
           </div>
@@ -185,6 +201,9 @@ const ProfilePage: React.FC = () => {
               </div>
             ))} */}
         </div>
+        {showModal && (
+          <EditProfileModal user={userDetails} onClose={handleCloseModal} />
+        )}
       </div>
     </div>
   );
