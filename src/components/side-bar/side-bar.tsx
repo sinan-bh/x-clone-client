@@ -12,6 +12,7 @@ import { FaXTwitter } from "react-icons/fa6";
 import { BsThreeDots, BsPersonCircle } from "react-icons/bs";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import Cookies from "js-cookie";
 
 export type User = {
   userName: string;
@@ -22,9 +23,8 @@ export type User = {
 const Sidebar: React.FC = () => {
   const router = useRouter();
   const handleProfile = () => {
-    const storedUser = localStorage.getItem("loginedUser");
-
-    const user: User = JSON.parse(storedUser || "");
+    const currentUser = Cookies.get("user");
+    const user = JSON.parse(currentUser || "{}");
     router.push(`/${user?.userName}`);
   };
 
