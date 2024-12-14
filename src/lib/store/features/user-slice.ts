@@ -2,7 +2,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
-type FollowUser = {
+export type FollowUser = {
   _id: string;
   name: string;
   profilePicture: string;
