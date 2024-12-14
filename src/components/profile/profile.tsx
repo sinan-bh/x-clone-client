@@ -11,6 +11,7 @@ import {
   fetchUserData,
   setIsOwnProfile,
 } from "@/lib/store/features/user-slice";
+import axios from "axios";
 
 const ProfilePage: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -19,10 +20,9 @@ const ProfilePage: React.FC = () => {
   );
   const { userDetails, isOwnProfile } = useAppSelector((state) => state.user);
   const [showModal, setShowModal] = useState(false);
+  const [follow, setFollow] = useState<"follow" | "following">("follow");
 
   const { profileId }: { profileId: string } = useParams();
-
-  console.log(userDetails);
 
   useEffect(() => {
     const currentUser = Cookies.get("user");
@@ -32,6 +32,12 @@ const ProfilePage: React.FC = () => {
 
     dispatch(setIsOwnProfile(user.userName === profileId));
 
+    // if (userDetails?.isFollow === true) {
+
+    //   setFollow("unfollow");
+    // } else {
+    //   setFollow("follow");
+    // }
     // Fetch tweets from the API
     // const fetchTweets = async () => {
     //   try {
@@ -45,11 +51,39 @@ const ProfilePage: React.FC = () => {
     // fetchTweets();
   }, [profileId, dispatch]);
 
+  useEffect(() => {
+    const currentUser = Cookies.get("user");
+    const user = JSON.parse(currentUser || "{}");
+
+    const isTrue = userDetails?.followers.find(
+      (f) => f.userName === user?.userName
+    );
+
+    if (isTrue) {
+      setFollow("following");
+    } else {
+      setFollow("follow");
+    }
+  }, [profileId, userDetails?.followers]);
+
   const handleEditProfile = () => setShowModal(true);
   const handleCloseModal = () => setShowModal(false);
 
-  const handleFollow = async () => {
-    alert("followed");
+  const handleFollow = async (followedUserId: string) => {
+    const currentUser = Cookies.get("user");
+    const user = JSON.parse(currentUser || "{}");
+
+    const res = await axios.put(
+      `http://localhost:3001/api/user/${followedUserId}/${user?.id}`
+    );
+
+    if (res.data.data.user.following.length === 0) {
+      setFollow("follow");
+      await dispatch(fetchUserData(profileId));
+    } else {
+      setFollow("following");
+      await dispatch(fetchUserData(profileId));
+    }
   };
 
   if (!userDetails) {
@@ -95,9 +129,11 @@ const ProfilePage: React.FC = () => {
         <div className="flex justify-end m-4 cursor-pointer">
           <div
             className="bg-white text-black hover:bg-gray-200 border py-2 rounded-2xl px-10 text-sm"
-            onClick={isOwnProfile ? handleEditProfile : handleFollow}
+            onClick={() =>
+              isOwnProfile ? handleEditProfile() : handleFollow(userDetails._id)
+            }
           >
-            {isOwnProfile ? "Edit Profile" : "Follow"}
+            {isOwnProfile ? "Edit Profile" : follow}
           </div>
         </div>
 

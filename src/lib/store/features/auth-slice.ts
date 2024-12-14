@@ -59,7 +59,7 @@ export const loginUser = createAsyncThunk(
           name: userData.user.name,
           email: userData.user.email,
           token: userData.token,
-          id: userData.user._id,
+          id: userData.user.id,
         }),
         { expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) }
       );

@@ -2,8 +2,15 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
+type FollowUser = {
+  _id: string;
+  name: string;
+  profilePicture: string;
+  userName: string;
+};
 // Define the initial state for the user
 interface User {
+  _id: string;
   createdAt: string;
   email: string;
   name: string;
@@ -12,9 +19,10 @@ interface User {
   bgImage: string;
   updatedAt: string;
   userName: string;
-  followers: [];
-  following: [];
+  followers: FollowUser[];
+  following: FollowUser[];
   bio?: string;
+  isFollow: boolean;
   location?: string;
   web?: string;
   tweets: string[];
@@ -39,9 +47,6 @@ export const fetchUserData = createAsyncThunk(
     const response = await axios.get(
       `http://localhost:3001/api/user/${profileId}`
     );
-
-    console.log(response);
-
     return response.data?.data;
   }
 );
