@@ -50,8 +50,6 @@ export const loginUser = createAsyncThunk(
       const { data } = response;
       const userData = data.data;
 
-      console.log(userData);
-
       Cookies.set(
         "user",
         JSON.stringify({

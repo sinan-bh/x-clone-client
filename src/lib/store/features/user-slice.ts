@@ -1,14 +1,16 @@
-// src/store/userSlice.ts
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
 
-type FollowUser = {
-  _id: string;
-  name: string;
-  profilePicture: string;
-  userName: string;
+export type FollowUser = {
+  _id?: string;
+  name?: string | undefined;
+  profilePicture?: string;
+  userName?: string;
+  bio?: string;
+  followers?: [];
+  following?: [];
 };
-// Define the initial state for the user
+
 interface User {
   _id: string;
   createdAt: string;
@@ -22,7 +24,6 @@ interface User {
   followers: FollowUser[];
   following: FollowUser[];
   bio?: string;
-  isFollow: boolean;
   location?: string;
   web?: string;
   tweets: string[];
@@ -31,16 +32,20 @@ interface User {
 interface UserState {
   userDetails: User | null;
   isOwnProfile: boolean;
+  followStatus: "follow" | "following";
   status: "idle" | "loading" | "failed";
+  followUsers: FollowUser[] | null;
 }
 
 const initialState: UserState = {
   userDetails: null,
   isOwnProfile: false,
+  followStatus: "follow",
   status: "idle",
+  followUsers: [],
 };
 
-// Create an async thunk to fetch user data
+// Fetch user data
 export const fetchUserData = createAsyncThunk(
   "user/fetchUserData",
   async (profileId: string) => {
@@ -51,7 +56,7 @@ export const fetchUserData = createAsyncThunk(
   }
 );
 
-// Create an async thunk to update user profile
+// Update user profile
 export const updateUserProfile = createAsyncThunk(
   "user/updateUserProfile",
   async (
@@ -83,21 +88,78 @@ export const updateUserProfile = createAsyncThunk(
           },
         }
       );
-      return response.data; // return the updated user data
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (error) {
-      return rejectWithValue("Error updating profile");
+      return response.data;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      return rejectWithValue(error.response.data);
     }
   }
 );
 
-// Create the user slice
+export const fetchFollowersOrFollowing = createAsyncThunk(
+  "user/fetchFollowersOrFollowing",
+  async ({
+    userName,
+    followStatus,
+  }: {
+    userName: string;
+    followStatus: string;
+  }) => {
+    const response = await axios.get(
+      `http://localhost:3001/api/user/${userName}?status=${followStatus}`
+    );
+
+    return {
+      data:
+        followStatus === "followers"
+          ? response.data.data.followers
+          : response.data.data.following,
+    };
+  }
+);
+
+export const toggleFollow = createAsyncThunk(
+  "user/toggleFollow",
+  async ({
+    userId: id,
+    followedUserId,
+  }: {
+    userId: string;
+    followedUserId: string;
+  }) => {
+    const response = await axios.post(`http://localhost:3001/api/user/${id}`, {
+      userId: followedUserId,
+    });
+
+    return response.data?.data;
+  }
+);
+
+export const unfollow = createAsyncThunk(
+  "user/unfollow",
+  async ({
+    userId,
+    followedUserId,
+  }: {
+    userId: string;
+    followedUserId: string;
+  }) => {
+    const response = await axios.delete(
+      `http://localhost:3001/api/user/${userId}/${followedUserId}`
+    );
+
+    return response.data?.data;
+  }
+);
 const userSlice = createSlice({
   name: "user",
   initialState,
   reducers: {
-    setIsOwnProfile: (state, action) => {
+    setIsOwnProfile(state, action: PayloadAction<boolean>) {
       state.isOwnProfile = action.payload;
+    },
+    setFollowStatus(state, action: PayloadAction<"follow" | "following">) {
+      state.followStatus = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -108,20 +170,35 @@ const userSlice = createSlice({
       .addCase(fetchUserData.fulfilled, (state, action) => {
         state.status = "idle";
         state.userDetails = action.payload;
+        const isFollowing = action.payload.followers.some(
+          (follower: FollowUser) =>
+            follower.userName === state.userDetails?.userName
+        );
+        state.followStatus = isFollowing ? "following" : "follow";
       })
       .addCase(fetchUserData.rejected, (state) => {
         state.status = "failed";
       })
-      .addCase(updateUserProfile.fulfilled, (state, action) => {
-        state.status = "idle";
-        state.userDetails = action.payload; // Update user details with the response
+      .addCase(toggleFollow.fulfilled, (state, action) => {
+        const { followedUser } = action.payload;
+        state.userDetails = followedUser;
       })
-      .addCase(updateUserProfile.rejected, (state) => {
+      .addCase(fetchFollowersOrFollowing.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(fetchFollowersOrFollowing.fulfilled, (state, action) => {
+        state.status = "idle";
+
+        state.followUsers = action.payload.data;
+      })
+      .addCase(fetchFollowersOrFollowing.rejected, (state) => {
         state.status = "failed";
+      })
+      .addCase(unfollow.fulfilled, (state, action) => {
+        state.followUsers = action.payload;
       });
   },
 });
 
-export const { setIsOwnProfile } = userSlice.actions;
-
+export const { setIsOwnProfile, setFollowStatus } = userSlice.actions;
 export default userSlice.reducer;

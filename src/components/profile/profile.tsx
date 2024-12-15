@@ -9,18 +9,21 @@ import EditProfileModal from "./edit-profile";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hook";
 import {
   fetchUserData,
+  setFollowStatus,
   setIsOwnProfile,
+  toggleFollow,
 } from "@/lib/store/features/user-slice";
-import axios from "axios";
+import Link from "next/link";
 
 const ProfilePage: React.FC = () => {
   const dispatch = useAppDispatch();
   const [activeTab, setActiveTab] = useState<"tweets" | "replies" | "likes">(
     "tweets"
   );
-  const { userDetails, isOwnProfile } = useAppSelector((state) => state.user);
+  const { userDetails, isOwnProfile, followStatus } = useAppSelector(
+    (state) => state.user
+  );
   const [showModal, setShowModal] = useState(false);
-  const [follow, setFollow] = useState<"follow" | "following">("follow");
 
   const { profileId }: { profileId: string } = useParams();
 
@@ -29,42 +32,8 @@ const ProfilePage: React.FC = () => {
     const user = JSON.parse(currentUser || "{}");
 
     dispatch(fetchUserData(profileId));
-
     dispatch(setIsOwnProfile(user.userName === profileId));
-
-    // if (userDetails?.isFollow === true) {
-
-    //   setFollow("unfollow");
-    // } else {
-    //   setFollow("follow");
-    // }
-    // Fetch tweets from the API
-    // const fetchTweets = async () => {
-    //   try {
-    //     const response = await axios.get(`/api/users/${profileId}/tweets`);
-    //     setTweets(response.data.tweets);
-    //   } catch (error) {
-    //     console.error("Error fetching tweets:", error);
-    //   }
-    // };
-
-    // fetchTweets();
   }, [profileId, dispatch]);
-
-  useEffect(() => {
-    const currentUser = Cookies.get("user");
-    const user = JSON.parse(currentUser || "{}");
-
-    const isTrue = userDetails?.followers.find(
-      (f) => f.userName === user?.userName
-    );
-
-    if (isTrue) {
-      setFollow("following");
-    } else {
-      setFollow("follow");
-    }
-  }, [profileId, userDetails?.followers]);
 
   const handleEditProfile = () => setShowModal(true);
   const handleCloseModal = () => setShowModal(false);
@@ -72,18 +41,10 @@ const ProfilePage: React.FC = () => {
   const handleFollow = async (followedUserId: string) => {
     const currentUser = Cookies.get("user");
     const user = JSON.parse(currentUser || "{}");
-
-    const res = await axios.put(
-      `http://localhost:3001/api/user/${followedUserId}/${user?.id}`
-    );
-
-    if (res.data.data.user.following.length === 0) {
-      setFollow("follow");
-      await dispatch(fetchUserData(profileId));
-    } else {
-      setFollow("following");
-      await dispatch(fetchUserData(profileId));
-    }
+    const newFollowStatus =
+      followStatus === "following" ? "follow" : "following";
+    dispatch(setFollowStatus(newFollowStatus));
+    await dispatch(toggleFollow({ userId: user.id, followedUserId }));
   };
 
   if (!userDetails) {
@@ -133,13 +94,14 @@ const ProfilePage: React.FC = () => {
               isOwnProfile ? handleEditProfile() : handleFollow(userDetails._id)
             }
           >
-            {isOwnProfile ? "Edit Profile" : follow}
+            {isOwnProfile ? "Edit Profile" : followStatus}
           </div>
         </div>
 
         <div className="mt-12 px-6">
           <h2 className="text-xl font-bold">{userDetails?.name}</h2>
           <p className="text-gray-600">@{userDetails?.userName}</p>
+          <p className="mt-2">{userDetails?.bio}</p>
           <div className="text-gray-600 mt-3 text-lg flex items-center">
             <LuCalendarClock />
             <span className="ml-2">Joined </span>
@@ -150,25 +112,24 @@ const ProfilePage: React.FC = () => {
               })}
             </span>
           </div>
-          <p className="mt-2">{userDetails?.bio}</p>
 
           <div className="flex gap-4 mt-4">
-            <span>
+            <Link href={`/${profileId}/following`} className="hover:underline">
               <span className="font-bold">
                 {userDetails?.following?.length}
               </span>{" "}
-              Following
-            </span>
-            <span>
+              <span className="text-gray-500">Following</span>
+            </Link>
+            <Link href={`/${profileId}/followers`} className="hover:underline">
               <span className="font-bold">
                 {userDetails?.followers?.length}
               </span>{" "}
-              Followers
-            </span>
+              <span className="text-gray-500">Followers</span>
+            </Link>
           </div>
         </div>
 
-        <div className="flex justify-around border-b mt-4">
+        <div className="flex justify-around border-b border-gray-600 mt-4">
           <div
             className={`relative py-2 text-center font-semibold cursor-pointer ${
               activeTab === "tweets" ? "text-white" : "text-gray-400"
