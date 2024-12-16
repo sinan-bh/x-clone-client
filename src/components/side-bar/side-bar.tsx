@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   FaHome,
   FaSearch,
@@ -9,24 +9,27 @@ import {
   FaFeatherAlt,
 } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
-import { BsThreeDots, BsPersonCircle } from "react-icons/bs";
+import { BsThreeDots } from "react-icons/bs";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
+import Image from "next/image";
 
 export type User = {
+  id: string;
+  name: string;
   userName: string;
   email?: string;
-  password?: string;
+  profilePicture?: string;
 };
 
 const Sidebar: React.FC = () => {
-  const router = useRouter();
-  const handleProfile = () => {
+  const [loginedUser, setLoginedUser] = useState<User>();
+
+  useEffect(() => {
     const currentUser = Cookies.get("user");
     const user = JSON.parse(currentUser || "{}");
-    router.push(`/${user?.userName}`);
-  };
+    setLoginedUser(user);
+  }, []);
 
   return (
     <div className="flex flex-col py-4 justify-between max-w-60 items-end pr-5 border-r border-gray-600 h-screen">
@@ -49,17 +52,30 @@ const Sidebar: React.FC = () => {
         <Link href={"/messages"}>
           <FaEnvelope className="text-2xl cursor-pointer hover:text-gray-500" />
         </Link>
-        <FaUser
-          className="text-2xl cursor-pointer hover:text-gray-500"
-          onClick={handleProfile}
-        />
+        <Link href={`/${loginedUser?.userName}`}>
+          <FaUser className="text-2xl cursor-pointer hover:text-gray-500" />
+        </Link>
         <BsThreeDots className="text-2xl cursor-pointer hover:text-gray-500" />
       </nav>
       <div className="flex items-center justify-center bg-gray-200 text-black text-2xl w-12 h-10 rounded-full cursor-pointer hover:bg-gray-300">
         <FaFeatherAlt />
       </div>
       <div className="text-white text-4xl cursor-pointer">
-        <BsPersonCircle />
+        <div>
+          {loginedUser?.profilePicture ? (
+            <Image
+              src={loginedUser?.profilePicture}
+              width={100}
+              height={100}
+              alt="Profile Picture"
+              className="w-12 h-12 rounded-full"
+            />
+          ) : (
+            <div className="w-12 h-12 text-white bg-green-700 text-2xl flex justify-center items-center rounded-full">
+              {loginedUser?.name && loginedUser?.name.charAt(0).toUpperCase()}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
