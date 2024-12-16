@@ -8,9 +8,12 @@ import { LuCalendarClock } from "react-icons/lu";
 import axios from "axios";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
+import { fetchTweets } from "@/lib/store/features/tweets-slice";
+import { useAppDispatch } from "@/lib/store/hook";
 
 const PostInput: React.FC = () => {
   const router = useRouter();
+  const dispatch = useAppDispatch();
   const [files, setFiles] = useState<File[]>([]);
   const [tweetText, setTweetText] = useState<string>("");
   const [isPosting, setIsPosting] = useState<boolean>(false);
@@ -56,13 +59,11 @@ const PostInput: React.FC = () => {
         {
           headers: {
             "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${user?.token}`, // Include token here
+            Authorization: `Bearer ${user?.token}`,
           },
           withCredentials: true,
         }
       );
-
-      console.log(response.data);
 
       if (response.data?.status === "success") {
         console.log("Tweet posted successfully:", response.data);
@@ -78,6 +79,7 @@ const PostInput: React.FC = () => {
       alert("Error posting tweet. Please check the console for more details.");
     } finally {
       setIsPosting(false);
+      await dispatch(fetchTweets());
     }
   };
 
@@ -98,11 +100,10 @@ const PostInput: React.FC = () => {
         </div>
       </div>
 
-      {/* Media Previews */}
       {files.length > 0 && (
         <div className="grid grid-cols-3 gap-4 pt-4">
           {files.map((file, index) => {
-            const fileUrl = URL.createObjectURL(file); // Generate URL for the file
+            const fileUrl = URL.createObjectURL(file);
             let preview;
 
             if (file.type.startsWith("image/")) {
@@ -149,7 +150,6 @@ const PostInput: React.FC = () => {
       )}
 
       <div className="flex justify-between pt-6">
-        {/* Icons */}
         <div className="flex items-center space-x-3 text-blue-500">
           <label htmlFor="file-upload" className="cursor-pointer">
             <FiImage className="w-5 h-5 hover:text-blue-400" />

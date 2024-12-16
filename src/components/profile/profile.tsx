@@ -25,7 +25,7 @@ const ProfilePage: React.FC = () => {
   );
   const [showModal, setShowModal] = useState(false);
 
-  const { profileId }: { profileId: string } = useParams();
+  const { profileId, tweetStatus }: { profileId: string, tweetStatus: string; } = useParams();
 
   useEffect(() => {
     const currentUser = Cookies.get("user");

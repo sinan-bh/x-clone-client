@@ -101,20 +101,27 @@ const Tweet: React.FC<TweetProps> = ({
         </div>
         <p className="mt-2 text-sm">{text}</p>
         {media && (
-          <div>
+          <div
+            className={`mt-4 ${
+              media.length > 1 ? "grid grid-cols-2 gap-2 sm:grid-cols-3" : ""
+            }`}
+          >
             {media.map((m, i) => (
-              <div key={i}>
+              <div key={i} className={`${media.length > 1 ? "" : "w-full"}`}>
                 <Image
                   src={m || ""}
-                  alt="no post"
-                  width={100}
-                  height={100}
-                  className="h-full w-full rounded-3xl"
+                  alt="Media"
+                  width={media.length > 1 ? 200 : 500}
+                  height={media.length > 1 ? 200 : 300}
+                  className={`rounded-lg ${
+                    media.length > 1 ? " object-cover  w-full" : "h-auto w-full"
+                  }`}
                 />
               </div>
             ))}
           </div>
         )}
+
         <div className="flex justify-around mt-4 text-gray-400">
           <button
             onClick={handleLike}

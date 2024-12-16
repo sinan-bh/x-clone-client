@@ -28,6 +28,8 @@ const Sidebar: React.FC = () => {
   useEffect(() => {
     const currentUser = Cookies.get("user");
     const user = JSON.parse(currentUser || "{}");
+    console.log(user.profilePicture);
+
     setLoginedUser(user);
   }, []);
 

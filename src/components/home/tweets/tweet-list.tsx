@@ -9,6 +9,7 @@ import { User } from "@/components/side-bar/side-bar";
 interface TweetData {
   user: User;
   text: string;
+  profilePicture: string;
   media?: string[];
   likes: string[];
   comments: string[];
@@ -28,7 +29,7 @@ const TweetList: React.FC = () => {
         const response = await axios.get("http://localhost:3001/api/tweets", {
           headers: {
             "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${user?.token}`,
+            Authorization: `Bearer ${user?.token}`, 
           },
           withCredentials: true,
         });
@@ -43,7 +44,6 @@ const TweetList: React.FC = () => {
     fetchTweets();
   }, []);
 
-  console.log(tweets);
 
   return (
     <div className="bg-black min-h-screen text-white">
