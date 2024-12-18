@@ -12,15 +12,15 @@ interface TabContentProps {
 }
 
 const TabContent: React.FC<TabContentProps> = ({ activeTab, userId }) => {
-  const { profileId }: { profileId: string } = useParams();
+  const { userName }: { userName: string } = useParams();
   const { userTweet, loading, error } = useAppSelector((state) => state.tweets);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    if (profileId) {
+    if (userName) {
       dispatch(fetchUserTweet(userId));
     }
-  }, [dispatch, profileId, userId]);
+  }, [dispatch, userName, userId]);
 
   const renderContent = () => {
     if (loading) return <div>Loading...</div>;
@@ -49,8 +49,5 @@ const TabContent: React.FC<TabContentProps> = ({ activeTab, userId }) => {
 
   return <div>{renderContent()}</div>;
 };
-
-
-
 
 export default TabContent;

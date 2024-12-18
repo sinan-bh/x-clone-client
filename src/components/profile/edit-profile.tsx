@@ -31,7 +31,7 @@ interface EditProfileProps {
 }
 
 const EditProfileModal: React.FC<EditProfileProps> = ({ user, onClose }) => {
-  const { profileId }: { profileId: string } = useParams();
+  const { userName }: { userName: string } = useParams();
   const dispatch = useAppDispatch();
   const [name, setName] = useState(user.name);
   const [bio, setBio] = useState(user.bio || "");
@@ -66,7 +66,7 @@ const EditProfileModal: React.FC<EditProfileProps> = ({ user, onClose }) => {
     try {
       await dispatch(
         updateUserProfile({
-          profileId,
+          userName,
           name,
           bio,
           location,
@@ -77,7 +77,7 @@ const EditProfileModal: React.FC<EditProfileProps> = ({ user, onClose }) => {
       ).unwrap();
       alert("updated successfully");
       onClose();
-      await dispatch(fetchUserData(profileId));
+      await dispatch(fetchUserData(userName));
     } catch (error) {
       console.error("Error updating profile:", error);
     }

@@ -82,7 +82,6 @@ const PostInput: React.FC = () => {
       setIsPosting(false);
     }
   };
-  console.log(isText);
 
   return (
     <div className="bg-black p-4 rounded-lg border-b border-gray-700">

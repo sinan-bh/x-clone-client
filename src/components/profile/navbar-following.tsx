@@ -9,16 +9,14 @@ import { fetchUserData } from "@/lib/store/features/user-slice";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hook";
 
 const FollowStatus: React.FC = () => {
-  const {
-    profileId,
-    followStatus,
-  }: { profileId: string; followStatus: string } = useParams();
+  const { userName, followStatus }: { userName: string; followStatus: string } =
+    useParams();
   const dispatch = useAppDispatch();
   const { userDetails } = useAppSelector((state) => state.user);
 
   useEffect(() => {
-    dispatch(fetchUserData(profileId));
-  }, [dispatch, profileId]);
+    dispatch(fetchUserData(userName));
+  }, [dispatch, userName]);
 
   return (
     <div className="min-h-screen bg-black text-white flex">
@@ -40,7 +38,7 @@ const FollowStatus: React.FC = () => {
         <header className="border-b border-gray-700 pb-4  mb-6 max-w-full hide-scrollbar overflow-x-auto text-nowrap">
           <nav className="flex justify-evenly space-x-4 mt-2">
             <Link
-              href={`/${profileId}/followers`}
+              href={`/${userName}/followers`}
               className={`relative text-gray-400 font-medium cursor-pointer ${
                 followStatus === "followers" ? "text-white" : "text-gray-400"
               }`}
@@ -51,7 +49,7 @@ const FollowStatus: React.FC = () => {
               )}
             </Link>
             <Link
-              href={`/${profileId}/following`}
+              href={`/${userName}/following`}
               className={`relative text-gray-400 font-medium cursor-pointer ${
                 followStatus === "following" ? "text-white" : "text-gray-400"
               }`}
@@ -64,7 +62,7 @@ const FollowStatus: React.FC = () => {
           </nav>
         </header>
 
-        <FollowStatusUser userName={profileId} followStatus={followStatus} />
+        <FollowStatusUser userName={userName} followStatus={followStatus} />
       </div>
       <SearchSection />
     </div>

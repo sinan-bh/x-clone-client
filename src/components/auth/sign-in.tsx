@@ -2,6 +2,7 @@
 
 import { loginUser } from "@/lib/store/features/auth-slice";
 import { useAppDispatch } from "@/lib/store/hook";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
@@ -96,9 +97,9 @@ const SignIn = () => {
         </form>
         <p className="text-center mt-4 text-gray-500">
           Don&apos;t have an account?{" "}
-          <a href="/signup" className="text-blue-600 hover:underline">
+          <Link href="/signup" className="text-blue-600 hover:underline">
             Sign up
-          </a>
+          </Link>
         </p>
       </div>
     </div>

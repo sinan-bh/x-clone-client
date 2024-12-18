@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
+import Cookies from "js-cookie";
 
 export type FollowUser = {
   _id?: string;
@@ -48,9 +49,9 @@ const initialState: UserState = {
 // Fetch user data
 export const fetchUserData = createAsyncThunk(
   "user/fetchUserData",
-  async (profileId: string) => {
+  async (userName: string) => {
     const response = await axios.get(
-      `http://localhost:3001/api/user/${profileId}`
+      `http://localhost:3001/api/user/${userName}`
     );
     return response.data?.data;
   }
@@ -61,10 +62,12 @@ export const updateUserProfile = createAsyncThunk(
   "user/updateUserProfile",
   async (
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    { profileId, name, bio, location, web, profilePicture, bgImage }: any,
+    { userName, name, bio, location, web, profilePicture, bgImage }: any,
     { rejectWithValue }
   ) => {
     try {
+      const currentUser = Cookies.get("user");
+      const user = JSON.parse(currentUser || "{}");
       const formData = new FormData();
       formData.append("name", name);
       formData.append("bio", bio);
@@ -80,12 +83,14 @@ export const updateUserProfile = createAsyncThunk(
       }
 
       const response = await axios.put(
-        `http://localhost:3001/api/user/${profileId}`,
+        `http://localhost:3001/api/user/${userName}`,
         formData,
         {
           headers: {
             "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${user?.token}`,
           },
+          withCredentials: true,
         }
       );
       return response.data;
