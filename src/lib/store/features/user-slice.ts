@@ -158,7 +158,7 @@ const userSlice = createSlice({
     setIsOwnProfile(state, action: PayloadAction<boolean>) {
       state.isOwnProfile = action.payload;
     },
-    setFollowStatus(state, action: PayloadAction<"follow" | "following">) {
+    setFollowStatus: (state, action: PayloadAction<"follow" | "following">) => {
       state.followStatus = action.payload;
     },
   },

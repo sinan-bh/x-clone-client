@@ -23,9 +23,19 @@ const FollowStatus: React.FC = () => {
   return (
     <div className="min-h-screen bg-black text-white flex">
       <div className="w-full  py-4">
-        <div className="px-6">
-          <div className="text-xl">{userDetails?.name}</div>
-          <div className="text-sm text-gray-500">@{userDetails?.userName}</div>
+        <div className="px-6 flex flex-col gap-1">
+          <Link
+            href={`/${userDetails?.userName}`}
+            className="text-xl hover:underline"
+          >
+            {userDetails?.name}
+          </Link>
+          <Link
+            href={`/${userDetails?.userName}`}
+            className="text-sm text-gray-500 hover:underline"
+          >
+            @{userDetails?.userName}
+          </Link>
         </div>
         <header className="border-b border-gray-700 pb-4  mb-6 max-w-full hide-scrollbar overflow-x-auto text-nowrap">
           <nav className="flex justify-evenly space-x-4 mt-2">

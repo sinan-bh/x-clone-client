@@ -1,6 +1,5 @@
 "use client";
 
-import { User } from "@/components/side-bar/side-bar";
 import Image from "next/image";
 import React, { useState } from "react";
 import {
@@ -13,9 +12,10 @@ import {
 } from "react-icons/fa";
 import { formatDistanceToNow, parseISO } from "date-fns";
 import Link from "next/link";
+import { UserDetails } from "@/lib/store/features/tweets-slice";
 
 interface TweetProps {
-  user: User;
+  user: UserDetails;
   text: string;
   media?: string[];
   likes: string[];

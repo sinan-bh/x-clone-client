@@ -1,49 +1,17 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import axios from "axios";
+import React, { useEffect } from "react";
 import Tweet from "@/components/home/tweets/tweet";
-import Cookies from "js-cookie";
-import { User } from "@/components/side-bar/side-bar";
-
-interface TweetData {
-  user: User;
-  text: string;
-  profilePicture: string;
-  media?: string[];
-  likes: string[];
-  comments: string[];
-  reposts: string[];
-  createdAt: string;
-}
+import { useAppDispatch, useAppSelector } from "@/lib/store/hook";
+import { fetchTweets } from "@/lib/store/features/tweets-slice";
 
 const TweetList: React.FC = () => {
-  const [tweets, setTweets] = useState<TweetData[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const dispatch = useAppDispatch();
+  const { tweets, loading } = useAppSelector((state) => state.tweets);
 
   useEffect(() => {
-    const currentUser = Cookies.get("user");
-    const user = JSON.parse(currentUser || "{}");
-    const fetchTweets = async () => {
-      try {
-        const response = await axios.get("http://localhost:3001/api/tweets", {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${user?.token}`, 
-          },
-          withCredentials: true,
-        });
-        setTweets(response.data.data);
-      } catch (error) {
-        console.error("Error fetching tweets:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchTweets();
-  }, []);
-
+    dispatch(fetchTweets());
+  }, [dispatch]);
 
   return (
     <div className="bg-black min-h-screen text-white">
