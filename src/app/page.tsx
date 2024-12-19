@@ -1,3 +1,9 @@
-export default function Home() {
-  return <div>home</div>;
+import Home from "@/components/auth/home";
+
+export default function Page() {
+  return (
+    <div>
+      <Home />
+    </div>
+  );
 }

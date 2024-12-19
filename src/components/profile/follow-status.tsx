@@ -75,7 +75,7 @@ export default function FollowStatusUser({
                           className="w-12 h-12 rounded-full"
                         />
                       ) : (
-                        <div className="w-12 h-12 text-black bg-green-700 text-2xl flex justify-center items-center rounded-full">
+                        <div className="w-12 h-12 text-white bg-green-700 text-2xl flex justify-center items-center rounded-full">
                           {user?.name && user.name.charAt(0).toUpperCase()}
                         </div>
                       )}

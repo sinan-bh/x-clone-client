@@ -1,12 +1,14 @@
 import { configureStore } from "@reduxjs/toolkit";
 import authReducer from "@/lib/store/features/auth-slice";
 import userReducer from "@/lib/store/features/user-slice";
+import tweetsReducer from "@/lib/store/features/tweets-slice";
 
 export const makeStore = () => {
   return configureStore({
     reducer: {
       auth: authReducer,
       user: userReducer,
+      tweets: tweetsReducer,
     },
   });
 };

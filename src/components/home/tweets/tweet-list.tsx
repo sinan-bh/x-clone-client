@@ -1,81 +1,25 @@
-import React from "react";
-import Tweet from "@/components/home/tweets/tweet";
+"use client";
 
-const tweets = [
-  {
-    username: "Kritika Singh",
-    content: "If you're a developer, let's #connect!",
-    profilePic: "https://via.placeholder.com/48",
-    post: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQCGt-g5iUAsR6gxKqs00elfvspDAyHhVfo3w&s",
-    likesCount: 24,
-    commentsCount: 12,
-    repostsCount: 3,
-  },
-  {
-    username: "Jane Doe",
-    content: "Learning React.js is fun! 🎉",
-    profilePic: "https://via.placeholder.com/48",
-    post: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQyFtGZ4juMqN_H-0kmSM-cLJTkQXKa6C9sOQ&s",
-    likesCount: 50,
-    commentsCount: 20,
-    repostsCount: 8,
-  },
-  {
-    username: "Jane Doe",
-    content: "Learning React.js is fun! 🎉",
-    profilePic: "https://via.placeholder.com/48",
-    likesCount: 50,
-    commentsCount: 20,
-    repostsCount: 8,
-  },
-  {
-    username: "Jane Doe",
-    content: "Learning React.js is fun! 🎉",
-    profilePic: "https://via.placeholder.com/48",
-    likesCount: 50,
-    commentsCount: 20,
-    repostsCount: 8,
-  },
-  {
-    username: "Jane Doe",
-    content: "Learning React.js is fun! 🎉",
-    profilePic: "https://via.placeholder.com/48",
-    likesCount: 50,
-    commentsCount: 20,
-    repostsCount: 8,
-  },
-  {
-    username: "Jane Doe",
-    content: "Learning React.js is fun! 🎉",
-    profilePic: "https://via.placeholder.com/48",
-    likesCount: 50,
-    commentsCount: 20,
-    repostsCount: 8,
-  },
-  {
-    username: "Jane Doe",
-    content: "Learning React.js is fun! 🎉",
-    profilePic: "https://via.placeholder.com/48",
-    likesCount: 50,
-    commentsCount: 20,
-    repostsCount: 8,
-  },
-  {
-    username: "Jane Doe",
-    content: "Learning React.js is fun! 🎉",
-    profilePic: "https://via.placeholder.com/48",
-    likesCount: 50,
-    commentsCount: 20,
-    repostsCount: 8,
-  },
-];
+import React, { useEffect } from "react";
+import Tweet from "@/components/home/tweets/tweet";
+import { useAppDispatch, useAppSelector } from "@/lib/store/hook";
+import { fetchTweets } from "@/lib/store/features/tweets-slice";
 
 const TweetList: React.FC = () => {
+  const dispatch = useAppDispatch();
+  const { tweets, loading } = useAppSelector((state) => state.tweets);
+
+  useEffect(() => {
+    dispatch(fetchTweets());
+  }, [dispatch]);
+
   return (
     <div className="bg-black min-h-screen text-white">
-      {tweets.map((tweet, index) => (
-        <Tweet key={index} {...tweet} />
-      ))}
+      {loading ? (
+        <div className="text-center text-gray-400">Loading tweets...</div>
+      ) : (
+        tweets?.map((tweet, index) => <Tweet key={index} {...tweet} />)
+      )}
     </div>
   );
 };
