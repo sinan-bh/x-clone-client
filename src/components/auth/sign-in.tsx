@@ -48,7 +48,6 @@ const SignIn = () => {
     <div className="h-screen flex justify-center items-center bg-gray-800">
       <div className="w-3/5 h-5/6 flex flex-col  bg-black  rounded-lg shadow-lg">
         <div className="flex items-center">
-          <div className="ml-8">x</div>
           <div className="flex justify-center w-full">
             <Image
               src={"/images/twitter-logo.png"}
@@ -90,7 +89,7 @@ const SignIn = () => {
                     <input
                       type="text"
                       id="userLogin"
-                      className="w-full bg-transparent text-white p-3 mt-2 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-800"
+                      className="w-full h-16 bg-transparent text-white p-3 mt-2 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-800"
                       placeholder="Enter your username or email"
                       value={userLogin}
                       onChange={(e) => {
@@ -111,12 +110,14 @@ const SignIn = () => {
                 </form>
               </div>
             </div>
-            <p className="text-center mt-4 text-gray-500">
-              Don&apos;t have an account?{" "}
-              <Link href="/signup" className="text-blue-600 hover:underline">
-                Sign up
-              </Link>
-            </p>
+            <div>
+              <div className="mt-4 text-gray-500">
+                Don&apos;t have an account?{" "}
+                <Link href="/signup" className="text-blue-600 hover:underline">
+                  Sign up
+                </Link>
+              </div>
+            </div>
           </div>
         ) : (
           <div className="w-full flex flex-col items-center justify-between mt-12">

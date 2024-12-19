@@ -1,10 +1,10 @@
-import UserProfile from "@/components/profile/profile";
+import VerifyOtp from "@/components/auth/verify-otp";
 import React from "react";
 
 export default function Page() {
   return (
     <div>
-      <UserProfile />
+      <VerifyOtp />
     </div>
   );
 }

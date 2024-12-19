@@ -24,10 +24,7 @@ const API_URL = "http://localhost:3001/api/auth";
 
 export const registerUser = createAsyncThunk(
   "auth/registerUser",
-  async (
-    userData: { userName: string; email: string; password: string },
-    { rejectWithValue }
-  ) => {
+  async (userData: { name: string; email: string }, { rejectWithValue }) => {
     try {
       const response = await axios.post(`${API_URL}/register`, userData);
       return response.data;
