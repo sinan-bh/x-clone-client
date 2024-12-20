@@ -20,13 +20,18 @@ const initialState: AuthState = {
   error: null,
 };
 
-const API_URL = "http://localhost:3001/api/auth";
+const Instance = axios.create({
+  baseURL: process.env.NEXT_PUBLIC_API_URL,
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
 
 export const registerUser = createAsyncThunk(
   "auth/registerUser",
   async (userData: { name: string; email: string }, { rejectWithValue }) => {
     try {
-      const response = await axios.post(`${API_URL}/register`, userData);
+      const response = await Instance.post(`/auth/register`, userData);
       return response.data;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
@@ -39,7 +44,7 @@ export const verifyOtp = createAsyncThunk(
   "auth/verifyOtp",
   async (userData: { otp: string; email: string }, { rejectWithValue }) => {
     try {
-      const response = await axios.post(`${API_URL}/verify-otp`, userData);
+      const response = await Instance.post(`/auth/verify-otp`, userData);
       return response.data;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
@@ -61,10 +66,7 @@ export const finalSubmission = createAsyncThunk(
     { rejectWithValue }
   ) => {
     try {
-      const response = await axios.post(
-        `${API_URL}/final-submission`,
-        userData
-      );
+      const response = await Instance.post(`/auth/final-submission`, userData);
       return response.data.data;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
@@ -81,7 +83,7 @@ export const loginUser = createAsyncThunk(
     { rejectWithValue }
   ) => {
     try {
-      const response = await axios.post(`${API_URL}/login`, credentials);
+      const response = await Instance.post(`/auth/login`, credentials);
       const { data } = response;
       const userData = data.data;
 
@@ -110,7 +112,7 @@ export const authLogin = createAsyncThunk(
   "auth/authLogin",
   async (email: string, { rejectWithValue }) => {
     try {
-      const response = await axios.post(`${API_URL}/google-auth`, { email });
+      const response = await Instance.post(`/auth/google-auth`, { email });
       const { data } = response;
       const userData = data.data;
 

@@ -1,6 +1,5 @@
+import axiosInstance from "@/utils/axios";
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import axios from "axios";
-import Cookies from "js-cookie";
 
 export type UserDetails = {
   _id: string;
@@ -39,19 +38,7 @@ export const createTweet = createAsyncThunk(
   "tweets/creatTweet",
   async (formData: FormData, { rejectWithValue }) => {
     try {
-      const currentUser = Cookies.get("user");
-      const user = JSON.parse(currentUser || "{}");
-      const response = await axios.post(
-        "http://localhost:3001/api/tweets",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${user?.token}`,
-          },
-          withCredentials: true,
-        }
-      );
+      const response = await axiosInstance.post("/tweets", formData);
       return response.data.data;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
@@ -67,15 +54,7 @@ export const fetchTweets = createAsyncThunk<TweetData[]>(
   "tweets/fetchTweets",
   async (_, { rejectWithValue }) => {
     try {
-      const currentUser = Cookies.get("user");
-      const user = JSON.parse(currentUser || "{}");
-      const response = await axios.get("http://localhost:3001/api/tweets", {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${user?.token}`,
-        },
-        withCredentials: true,
-      });
+      const response = await axiosInstance.get("/tweets");
       return response.data.data;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
@@ -91,18 +70,7 @@ export const fetchUserTweet = createAsyncThunk<TweetData[], string>(
   "tweets/fetchUserTweet",
   async (userId: string, { rejectWithValue }) => {
     try {
-      const currentUser = Cookies.get("user");
-      const user = JSON.parse(currentUser || "{}");
-      const response = await axios.get(
-        `http://localhost:3001/api/tweets/${userId}`,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${user?.token}`,
-          },
-          withCredentials: true,
-        }
-      );
+      const response = await axiosInstance.get(`/tweets/${userId}`);
       return response.data.data;
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any

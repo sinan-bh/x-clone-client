@@ -1,3 +1,4 @@
+import axiosInstance from "@/utils/axios";
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
 import Cookies from "js-cookie";
@@ -48,11 +49,18 @@ const initialState: UserState = {
   followUsers: [],
 };
 
+const Instance = axios.create({
+  baseURL: process.env.NEXT_PUBLIC_API_URL,
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
+
 // Fetch All users
 export const fetchAllUsers = createAsyncThunk(
   "user/fetchAllUsers",
   async () => {
-    const response = await axios.get(`http://localhost:3001/api/user`);
+    const response = await Instance.get(`/user`);
     return response.data?.data;
   }
 );
@@ -61,9 +69,7 @@ export const fetchAllUsers = createAsyncThunk(
 export const fetchUserData = createAsyncThunk(
   "user/fetchUserData",
   async (userName: string) => {
-    const response = await axios.get(
-      `http://localhost:3001/api/user/${userName}`
-    );
+    const response = await Instance.get(`/user/${userName}`);
     return response.data?.data;
   }
 );
@@ -93,17 +99,13 @@ export const updateUserProfile = createAsyncThunk(
         formData.append("bgImage", bgImage);
       }
 
-      const response = await axios.put(
-        `http://localhost:3001/api/user/${userName}`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${user?.token}`,
-          },
-          withCredentials: true,
-        }
-      );
+      const response = await axiosInstance.put(`/user/${userName}`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${user?.token}`,
+        },
+        withCredentials: true,
+      });
       return response.data;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
@@ -121,8 +123,8 @@ export const fetchFollowersOrFollowing = createAsyncThunk(
     userName: string;
     followStatus: string;
   }) => {
-    const response = await axios.get(
-      `http://localhost:3001/api/user/${userName}?status=${followStatus}`
+    const response = await Instance.get(
+      `/user/${userName}?status=${followStatus}`
     );
 
     return {
@@ -143,7 +145,7 @@ export const toggleFollow = createAsyncThunk(
     userId: string;
     followedUserId: string;
   }) => {
-    const response = await axios.post(`http://localhost:3001/api/user/${id}`, {
+    const response = await axiosInstance.post(`/user/${id}`, {
       userId: followedUserId,
     });
 
@@ -151,22 +153,20 @@ export const toggleFollow = createAsyncThunk(
   }
 );
 
-export const unfollow = createAsyncThunk(
-  "user/unfollow",
-  async ({
-    userId,
-    followedUserId,
-  }: {
-    userId: string;
-    followedUserId: string;
-  }) => {
-    const response = await axios.delete(
-      `http://localhost:3001/api/user/${userId}/${followedUserId}`
-    );
+// export const unfollow = createAsyncThunk(
+//   "user/unfollow",
+//   async ({
+//     userId,
+//     followedUserId,
+//   }: {
+//     userId: string;
+//     followedUserId: string;
+//   }) => {
+//     const response = await axios.delete(`/user/${userId}/${followedUserId}`);
 
-    return response.data?.data;
-  }
-);
+//     return response.data?.data;
+//   }
+// );
 const userSlice = createSlice({
   name: "user",
   initialState,
@@ -216,10 +216,10 @@ const userSlice = createSlice({
       })
       .addCase(fetchFollowersOrFollowing.rejected, (state) => {
         state.status = "failed";
-      })
-      .addCase(unfollow.fulfilled, (state, action) => {
-        state.followUsers = action.payload;
       });
+    // .addCase(unfollow.fulfilled, (state, action) => {
+    //   state.followUsers = action.payload;
+    // });
   },
 });
 
