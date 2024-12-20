@@ -7,6 +7,7 @@ const nextConfig = {
       "encrypted-tbn0.gstatic.com",
       "cdn.prod.website-files.com",
       "img.freepik.com",
+      "png.pngitem.com",
     ],
   },
 };

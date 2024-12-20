@@ -31,6 +31,7 @@ interface User {
 }
 
 interface UserState {
+  users: User[] | null;
   userDetails: User | null;
   isOwnProfile: boolean;
   followStatus: "follow" | "following";
@@ -39,12 +40,22 @@ interface UserState {
 }
 
 const initialState: UserState = {
+  users: null,
   userDetails: null,
   isOwnProfile: false,
   followStatus: "follow",
   status: "idle",
   followUsers: [],
 };
+
+// Fetch All users
+export const fetchAllUsers = createAsyncThunk(
+  "user/fetchAllUsers",
+  async () => {
+    const response = await axios.get(`http://localhost:3001/api/user`);
+    return response.data?.data;
+  }
+);
 
 // Fetch user data
 export const fetchUserData = createAsyncThunk(
@@ -169,6 +180,13 @@ const userSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      .addCase(fetchAllUsers.fulfilled, (state, action) => {
+        state.status = "idle";
+        state.users = action.payload;
+      })
+      .addCase(fetchAllUsers.rejected, (state) => {
+        state.status = "failed";
+      })
       .addCase(fetchUserData.pending, (state) => {
         state.status = "loading";
       })

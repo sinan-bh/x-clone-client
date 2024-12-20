@@ -22,6 +22,28 @@ const SignIn = () => {
   const [isNext, setIsNext] = useState<boolean>(false);
   const [password, setPassword] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
+  const [isActive, setIsActive] = useState<boolean>(false);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = e.target;
+    if (value) {
+      setIsActive(true);
+    } else {
+      setIsActive(false);
+    }
+    setUserLogin(value);
+    setError(null);
+  };
+
+  const handleChangePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = e.target;
+    if (value.length > 3) {
+      setIsActive(true);
+    } else {
+      setIsActive(false);
+    }
+    setPassword(value);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,8 +61,8 @@ const SignIn = () => {
       router.push(`/home`);
       alert("Sign In Successful");
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (err: any) {
-      setError(err && "Invalid username/email or password.");
+    } catch (err) {
+      setError((err as string) && "Invalid username/email or password.");
     }
   };
 
@@ -66,11 +88,11 @@ const SignIn = () => {
             </div>
             <div className="w-full flex flex-col items-center">
               <div className="w-2/4">
-                <div className="cursor-pointer bg-white border rounded-full py-2 text-black flex justify-center items-center">
+                <div className="cursor-pointer bg-white border rounded-3xl text-nowrap  py-2 text-black flex justify-center items-center">
                   <FcGoogle size={25} />
                   <span className="pl-2">Sign Up with Google</span>
                 </div>
-                <div className="cursor-pointer bg-white border rounded-full py-2 text-black flex justify-center items-center font-semibold my-3">
+                <div className="cursor-pointer bg-white border rounded-3xl text-nowrap  py-2 text-black flex justify-center items-center font-semibold my-3">
                   <AiFillApple size={25} />
                   <span className="pl-2">Sign Up with Apple</span>
                 </div>
@@ -80,9 +102,7 @@ const SignIn = () => {
                 <span className="px-2">or</span>
                 <div className=" border-b w-full border-gray-600"></div>
               </div>
-              {error && (
-                <p className="text-red-500 text-center mb-4">{error}</p>
-              )}
+
               <div className="w-2/4 ">
                 <form onSubmit={handleSubmit}>
                   <div className="mb-4">
@@ -92,19 +112,20 @@ const SignIn = () => {
                       className="w-full h-16 bg-transparent text-white p-3 mt-2 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-800"
                       placeholder="Enter your username or email"
                       value={userLogin}
-                      onChange={(e) => {
-                        setUserLogin(e.target.value);
-                        setError(null);
-                      }}
+                      onChange={handleChange}
                     />
                   </div>
                   <div
-                    className="w-full flex justify-center py-2 bg-white text-black rounded-full hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className={`w-full cursor-pointer flex justify-center py-2  rounded-3xl text-nowrap  ${
+                      isActive
+                        ? "bg-white text-black"
+                        : "bg-gray-600 text-white"
+                    }`}
                     onClick={() => setIsNext(true)}
                   >
                     Next
                   </div>
-                  <div className="w-full border border-gray-600 flex justify-center py-2 cursor-pointer rounded-full mt-4 hover:bg-gray-900">
+                  <div className="w-full border border-gray-600 flex justify-center py-2 cursor-pointer rounded-3xl text-nowrap  mt-4 hover:bg-gray-900">
                     forgot password
                   </div>
                 </form>
@@ -121,6 +142,7 @@ const SignIn = () => {
           </div>
         ) : (
           <div className="w-full flex flex-col items-center justify-between mt-12">
+            {error && <p className="text-red-500 text-center mb-4">{error}</p>}
             <div className="w-1/2  text-white">
               <h2 className="text-2xl font-bold ">Enter your password</h2>
               <div className="border bg-gray-900 border-none h-16 rounded-sm mt-7 px-2">
@@ -137,7 +159,7 @@ const SignIn = () => {
                     className="w-full h-16 bg-transparent p-3 mt-2 border text-white border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-800"
                     placeholder="Password"
                     value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    onChange={handleChangePassword}
                   />
                 </div>
                 <div className="w-full flex justify-between text-blue-500 text-sm">
@@ -149,7 +171,11 @@ const SignIn = () => {
               <div>
                 <div className="mt-6">
                   <div
-                    className="w-full flex justify-center py-3 bg-gray-600 text-white rounded-full hover:bg-gray-700"
+                    className={`"w-full cursor-pointer flex justify-center py-3 bg-gray-600 rounded-3xl text-nowrap font-bold ${
+                      isActive
+                        ? "bg-white text-black"
+                        : "bg-gray-600 text-white"
+                    }`}
                     onClick={handleSubmit}
                   >
                     Log in

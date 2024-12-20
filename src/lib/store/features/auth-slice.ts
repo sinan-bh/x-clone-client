@@ -35,6 +35,43 @@ export const registerUser = createAsyncThunk(
   }
 );
 
+export const verifyOtp = createAsyncThunk(
+  "auth/verifyOtp",
+  async (userData: { otp: string; email: string }, { rejectWithValue }) => {
+    try {
+      const response = await axios.post(`${API_URL}/verify-otp`, userData);
+      return response.data;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.message || error.message);
+    }
+  }
+);
+
+export const finalSubmission = createAsyncThunk(
+  "auth/finalSubmission",
+  async (
+    userData: {
+      name: string;
+      email: string;
+      userName: string;
+      password: string;
+    },
+    { rejectWithValue }
+  ) => {
+    try {
+      const response = await axios.post(
+        `${API_URL}/final-submission`,
+        userData
+      );
+      return response.data.data
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.message || error.message);
+    }
+  }
+);
+
 // Login user
 export const loginUser = createAsyncThunk(
   "auth/loginUser",
@@ -52,6 +89,7 @@ export const loginUser = createAsyncThunk(
         JSON.stringify({
           userName: userData.user.userName,
           name: userData.user.name,
+          profilePicture: userData.user.profilePicture,
           email: userData.user.email,
           token: userData.token,
           id: userData.user.id,
@@ -97,15 +135,15 @@ const authSlice = createSlice({
     builder.addCase(loginUser.pending, (state) => {
       state.loading = true;
       state.error = null;
-    });
-    builder.addCase(loginUser.fulfilled, (state, action) => {
+    }).addCase(loginUser.fulfilled, (state, action) => {
       state.loading = false;
       state.user = action.payload.user;
       state.token = action.payload.token;
-    });
-    builder.addCase(loginUser.rejected, (state, action) => {
+    }).addCase(loginUser.rejected, (state, action) => {
       state.loading = false;
       state.error = action.payload as string;
+    }).addCase(verifyOtp.rejected, (state, action)=> {
+      state.error = action.payload as string
     });
   },
 });
