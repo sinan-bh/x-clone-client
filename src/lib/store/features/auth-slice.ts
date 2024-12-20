@@ -54,6 +54,7 @@ export const finalSubmission = createAsyncThunk(
     userData: {
       name: string;
       email: string;
+      profilePicture: string;
       userName: string;
       password: string;
     },
@@ -64,7 +65,7 @@ export const finalSubmission = createAsyncThunk(
         `${API_URL}/final-submission`,
         userData
       );
-      return response.data.data
+      return response.data.data;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       return rejectWithValue(error.response?.data?.message || error.message);
@@ -81,6 +82,35 @@ export const loginUser = createAsyncThunk(
   ) => {
     try {
       const response = await axios.post(`${API_URL}/login`, credentials);
+      const { data } = response;
+      const userData = data.data;
+
+      Cookies.set(
+        "user",
+        JSON.stringify({
+          userName: userData.user.userName,
+          name: userData.user.name,
+          profilePicture: userData.user.profilePicture,
+          email: userData.user.email,
+          token: userData.token,
+          id: userData.user.id,
+        }),
+        { expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) }
+      );
+      return data;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.message || error.message);
+    }
+  }
+);
+
+//Auth Login
+export const authLogin = createAsyncThunk(
+  "auth/authLogin",
+  async (email: string, { rejectWithValue }) => {
+    try {
+      const response = await axios.post(`${API_URL}/google-auth`, { email });
       const { data } = response;
       const userData = data.data;
 
@@ -132,19 +162,36 @@ const authSlice = createSlice({
     });
 
     // Handle login
-    builder.addCase(loginUser.pending, (state) => {
-      state.loading = true;
-      state.error = null;
-    }).addCase(loginUser.fulfilled, (state, action) => {
-      state.loading = false;
-      state.user = action.payload.user;
-      state.token = action.payload.token;
-    }).addCase(loginUser.rejected, (state, action) => {
-      state.loading = false;
-      state.error = action.payload as string;
-    }).addCase(verifyOtp.rejected, (state, action)=> {
-      state.error = action.payload as string
-    });
+    builder
+      .addCase(loginUser.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(loginUser.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload.user;
+        state.token = action.payload.token;
+      })
+      .addCase(loginUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+      .addCase(authLogin.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(authLogin.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload.user;
+        state.token = action.payload.token;
+      })
+      .addCase(authLogin.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+      .addCase(verifyOtp.rejected, (state, action) => {
+        state.error = action.payload as string;
+      });
   },
 });
 

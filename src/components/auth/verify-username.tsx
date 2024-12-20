@@ -50,6 +50,7 @@ export default function VerifyUserName() {
         finalSubmission({
           name: data.name,
           email: data.email,
+          profilePicture: data.image,
           userName: userName,
           password: password,
         })

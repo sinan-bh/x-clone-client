@@ -1,21 +1,62 @@
 "use client";
 
+import { authLogin } from "@/lib/store/features/auth-slice";
+import { fetchAllUsers } from "@/lib/store/features/user-slice";
+import { useAppDispatch, useAppSelector } from "@/lib/store/hook";
+import { signIn, useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
-import React from "react";
+import { useRouter } from "next/navigation";
+import React, { useEffect } from "react";
 import { AiFillApple } from "react-icons/ai";
 import { FcGoogle } from "react-icons/fc";
 
+export const handleGoogleAuth = async () => {
+  await signIn("google");
+};
+
 export default function Home() {
+  const { data: session } = useSession();
+  const router = useRouter();
+  const dispatch = useAppDispatch();
+  const { users } = useAppSelector((state) => state.user);
+
+  useEffect(() => {
+    if (session?.user) {
+      dispatch(fetchAllUsers()).unwrap();
+    }
+  }, [session?.user, dispatch]);
+
+  useEffect(() => {
+    if (session?.user) {
+      const userEmail = session.user.email;
+      const isExisting = users?.some((user) => user.email === userEmail);
+      if (isExisting) {
+        dispatch(authLogin(userEmail as string)).unwrap();
+        router.push("/home");
+      } else {
+        localStorage.setItem(
+          "registration",
+          JSON.stringify({
+            name: session.user.name,
+            email: session.user.email,
+            image: session.user.image,
+          })
+        );
+        router.push("/verify-username");
+      }
+    }
+  }, [session?.user, users, dispatch, router]);
+
   return (
     <div className="flex flex-col md:flex-row h-screen">
-      <div className="w-full md:w-1/2 flex justify-center items-center h-1/2 md:h-screen  sm:p-4 md:ml-10">
+      <div className="w-full md:w-1/2 flex justify-center items-center h-1/2 md:h-screen sm:p-4 md:ml-10">
         <Image
           src={"/images/twitter-logo.png"}
           height={900}
           width={1000}
-          alt={""}
-          className="border-none max-w-full h-auto w-60 sm:w-full "
+          alt={"Twitter Logo"}
+          className="border-none max-w-full h-auto w-60 sm:w-full"
         />
       </div>
 
@@ -27,7 +68,10 @@ export default function Home() {
         <div className="flex flex-col mt-8 md:mt-10 w-full md:w-2/3 h-auto">
           <div className="text-2xl md:text-4xl font-bold">Join Today.</div>
           <div className="mt-6 md:mt-10">
-            <div className="cursor-pointer bg-white border rounded-full py-2 text-black flex justify-center items-center">
+            <div
+              className="cursor-pointer bg-white border rounded-full py-2 text-black flex justify-center items-center"
+              onClick={handleGoogleAuth}
+            >
               <FcGoogle size={25} />
               <span className="pl-2">Sign Up with Google</span>
             </div>

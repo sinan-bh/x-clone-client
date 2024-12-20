@@ -1,13 +1,16 @@
 "use client";
 
-import { registerUser } from "@/lib/store/features/auth-slice";
-import { useAppDispatch } from "@/lib/store/hook";
+import { authLogin, registerUser } from "@/lib/store/features/auth-slice";
+import { useAppDispatch, useAppSelector } from "@/lib/store/hook";
 import { useRouter } from "next/navigation";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { AiFillApple } from "react-icons/ai";
 import { FcGoogle } from "react-icons/fc";
 import Image from "next/image";
+import { handleGoogleAuth } from "./home";
+import { useSession } from "next-auth/react";
+import { fetchAllUsers } from "@/lib/store/features/user-slice";
 
 const Register = () => {
   const dispatch = useAppDispatch();
@@ -50,6 +53,37 @@ const Register = () => {
     }
   };
 
+  const { data: session } = useSession();
+
+  const { users } = useAppSelector((state) => state.user);
+
+  useEffect(() => {
+    if (session?.user) {
+      dispatch(fetchAllUsers()).unwrap();
+    }
+  }, [session?.user, dispatch]);
+
+  useEffect(() => {
+    if (session?.user) {
+      const userEmail = session.user.email;
+      const isExisting = users?.some((user) => user.email === userEmail);
+      if (isExisting) {
+        dispatch(authLogin(userEmail as string)).unwrap();
+        router.push("/home");
+      } else {
+        localStorage.setItem(
+          "registration",
+          JSON.stringify({
+            name: session.user.name,
+            email: session.user.email,
+            image: session.user.image,
+          })
+        );
+        router.push("/verify-username");
+      }
+    }
+  }, [session?.user, users, dispatch, router]);
+
   return (
     <div className="min-h-screen flex justify-center items-center bg-gray-800 p-4">
       <div className="max-w-md md:max-w-lg lg:max-w-2xl px-6 py-8 bg-black rounded-lg shadow-lg flex flex-col justify-center">
@@ -62,7 +96,10 @@ const Register = () => {
               Join X today
             </h2>
             <div className="max-w-full flex flex-col gap-4">
-              <button className="bg-white border rounded-3xl px-3 py-3 text-black flex justify-center items-center">
+              <button
+                className="bg-white border rounded-3xl px-3 py-3 text-black flex justify-center items-center"
+                onClick={handleGoogleAuth}
+              >
                 <FcGoogle size={25} />
                 <span className="pl-2">Sign Up with Google</span>
               </button>
