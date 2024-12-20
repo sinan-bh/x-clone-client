@@ -6,7 +6,9 @@ interface LogoutProps {
   onLogout: () => void;
   onCancel: () => void;
 }
+
 const Logout: React.FC<LogoutProps> = ({ onLogout,onCancel }) => {
+
   return (
     <div className="bg-black rounded-lg p-6 shadow-lg text-center">
       <h2 className="text-lg font-bold mb-4 text-white">

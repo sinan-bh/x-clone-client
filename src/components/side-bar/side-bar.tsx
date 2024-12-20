@@ -14,7 +14,7 @@ import Link from "next/link";
 import Cookies from "js-cookie";
 import Image from "next/image";
 import Logout from "./logout";
-import { useRouter } from "next/navigation";
+import { signOut } from "next-auth/react";
 
 export type User = {
   id: string;
@@ -27,7 +27,6 @@ export type User = {
 const Sidebar: React.FC = () => {
   const [loginedUser, setLoginedUser] = useState<User | null>(null);
   const [showLogoutPopup, setShowLogoutPopup] = useState(false);
-  const router = useRouter();
 
   useEffect(() => {
     const currentUser = Cookies.get("user");
@@ -37,9 +36,9 @@ const Sidebar: React.FC = () => {
     }
   }, []);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     Cookies.remove("user");
-    router.push("/signin");
+    await signOut({ callbackUrl: "/" });
   };
 
   return (
