@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   FaHeart,
   FaRegHeart,
@@ -12,43 +12,74 @@ import {
 } from "react-icons/fa";
 import { formatDistanceToNow, parseISO } from "date-fns";
 import Link from "next/link";
+import {
+  likedPost,
+  savedPost,
+} from "@/lib/store/thunks/tweet-thunk";
+import { useAppDispatch } from "@/lib/store/hook";
+import Cookies from "js-cookie";
 import { UserDetails } from "@/lib/store/features/tweets-slice";
 
 interface TweetProps {
+  _id: string;
   user: UserDetails;
   text: string;
   media?: string[];
   likes: string[];
+  saved: string[];
   comments: string[];
   reposts: string[];
   createdAt: string;
 }
 
 const Tweet: React.FC<TweetProps> = ({
+  _id,
   user,
   text,
   media,
   likes,
+  saved,
   comments,
   reposts,
   createdAt,
 }) => {
   const [liked, setLiked] = useState(false);
-  const [saved, setSaved] = useState(false);
+  const [save, setSave] = useState(false);
   const [likesCount, setLikesCount] = useState(likes.length);
   const [repost, setRepost] = useState(reposts.length);
+  const dispatch = useAppDispatch();
 
-  const handleLike = () => {
-    setLiked(!liked);
-    setLikesCount(liked ? likesCount - 1 : likesCount + 1);
+  useEffect(() => {
+    const currentUser = Cookies.get("user");
+    const user = JSON.parse(currentUser || "{}");
+    const isLiked = likes.includes(user.id) ? true : false;
+    setLiked(isLiked ? true : false);
+
+    const isSaved = saved.includes(user.id);
+    setSave(isSaved ? true : false);
+  }, [likes, saved]);
+
+  const handleLike = async (postId: string) => {
+    try {
+      const response = await dispatch(likedPost(postId)).unwrap();
+      const currentUser = Cookies.get("user");
+      const user = JSON.parse(currentUser || "{}");
+      const isLikedNow = response.post.likes.includes(user.id);
+      setLiked(isLikedNow);
+
+      setLikesCount(response.post.likes.length);
+    } catch (error) {
+      console.error("Error liking post:", error);
+    }
   };
 
   const handleRepost = () => {
     setRepost(repost + 1);
   };
 
-  const handleSave = () => {
-    setSaved(!saved);
+  const handleSave = async (postId: string) => {
+    await dispatch(savedPost(postId));
+    setSave(!save);
   };
 
   const getTimeAgo = (time: string) => {
@@ -123,13 +154,6 @@ const Tweet: React.FC<TweetProps> = ({
         )}
 
         <div className="flex justify-around mt-4 text-gray-400">
-          <button
-            onClick={handleLike}
-            className="flex items-center space-x-1 hover:text-red-500"
-          >
-            {liked ? <FaHeart className="text-red-500" /> : <FaRegHeart />}
-            <span>{likesCount}</span>
-          </button>
           <button className="flex items-center space-x-1 hover:text-blue-500">
             <FaComment />
             <span>{comments.length}</span>
@@ -142,15 +166,22 @@ const Tweet: React.FC<TweetProps> = ({
             <span>{reposts}</span>
           </button>
           <button
-            onClick={handleSave}
+            onClick={() => handleLike(_id)}
+            className="flex items-center space-x-1 hover:text-red-500"
+          >
+            {liked ? <FaHeart className="text-red-500" /> : <FaRegHeart />}
+            <span>{likesCount}</span>
+          </button>
+
+          <button
+            onClick={() => handleSave(_id)}
             className="flex items-center space-x-1 hover:text-yellow-500"
           >
-            {saved ? (
+            {save ? (
               <FaBookmark className="text-yellow-500" />
             ) : (
               <FaRegBookmark />
             )}
-            <span>{saved ? "Saved" : "Save"}</span>
           </button>
         </div>
       </div>

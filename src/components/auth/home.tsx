@@ -1,7 +1,7 @@
 "use client";
 
-import { authLogin } from "@/lib/store/features/auth-slice";
-import { fetchAllUsers } from "@/lib/store/features/user-slice";
+import { authLogin } from "@/lib/store/thunks/auth-thunk";
+import { fetchAllUsers } from "@/lib/store/thunks/user-thunk";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hook";
 import { signIn, useSession } from "next-auth/react";
 import Image from "next/image";

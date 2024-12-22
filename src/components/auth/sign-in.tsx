@@ -1,7 +1,7 @@
 "use client";
 
-import { authLogin, loginUser } from "@/lib/store/features/auth-slice";
-import { fetchAllUsers } from "@/lib/store/features/user-slice";
+import { authLogin, loginUser } from "@/lib/store/thunks/auth-thunk";
+import { fetchAllUsers } from "@/lib/store/thunks/user-thunk";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hook";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
@@ -11,6 +11,7 @@ import React, { useEffect, useState } from "react";
 import { AiFillApple } from "react-icons/ai";
 import { FcGoogle } from "react-icons/fc";
 import { handleGoogleAuth } from "./home";
+import { toast } from "react-toastify";
 
 export type Users = {
   userName: string;
@@ -42,6 +43,7 @@ const SignIn = () => {
       const isExisting = users?.some((user) => user.email === userEmail);
       if (isExisting) {
         dispatch(authLogin(userEmail as string)).unwrap();
+        toast.success("Sign In Successful")
         router.push("/home");
       } else {
         localStorage.setItem(
@@ -91,8 +93,8 @@ const SignIn = () => {
     try {
       await dispatch(loginUser({ loginField: userLogin, password })).unwrap();
       localStorage.setItem("loginedUser", JSON.stringify(true));
+      toast.success("Sign In Successful");
       router.push(`/home`);
-      alert("Sign In Successful");
     } catch (err) {
       setError((err as string) && "Invalid username/email or password.");
     }

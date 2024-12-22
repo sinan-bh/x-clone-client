@@ -1,9 +1,16 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 const NavBar: React.FC = () => {
   const [activeTab, setActiveTab] = useState<"forYou" | "following">("forYou");
+
+  useEffect(() => {
+    const status = JSON.parse(localStorage.getItem("status") || "forYou");
+    console.log(status);
+
+    setActiveTab(status);
+  }, [activeTab]);
 
   return (
     <div className="flex items-center justify-around bg-black text-white h-16 border-b border-gray-700">
@@ -12,7 +19,10 @@ const NavBar: React.FC = () => {
           className={`relative text-sm font-semibold cursor-pointer ${
             activeTab === "forYou" ? "text-white" : "text-gray-400"
           }`}
-          onClick={() => setActiveTab("forYou")}
+          onClick={() => {
+            setActiveTab("forYou");
+            localStorage.setItem("status", JSON.stringify("forYou"));
+          }}
         >
           For you
           {activeTab === "forYou" && (
@@ -23,7 +33,10 @@ const NavBar: React.FC = () => {
           className={`relative text-sm font-semibold cursor-pointer ${
             activeTab === "following" ? "text-white" : "text-gray-400"
           }`}
-          onClick={() => setActiveTab("following")}
+          onClick={() => {
+            setActiveTab("following");
+            localStorage.setItem("status", JSON.stringify("following"));
+          }}
         >
           Following
           {activeTab === "following" && (

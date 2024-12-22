@@ -7,8 +7,9 @@ import { useParams } from "next/navigation";
 import {
   fetchUserData,
   updateUserProfile,
-} from "@/lib/store/features/user-slice"; // Import the updateUserProfile action
+} from "@/lib/store/thunks/user-thunk"; // Import the updateUserProfile action
 import { useAppDispatch } from "@/lib/store/hook";
+import { toast } from "react-toastify";
 
 interface EditProfileProps {
   user: {
@@ -75,7 +76,7 @@ const EditProfileModal: React.FC<EditProfileProps> = ({ user, onClose }) => {
           bgImage,
         })
       ).unwrap();
-      alert("updated successfully");
+      toast.success("updated successfully");
       onClose();
       await dispatch(fetchUserData(userName));
     } catch (error) {

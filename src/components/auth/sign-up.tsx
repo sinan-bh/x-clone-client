@@ -1,6 +1,6 @@
 "use client";
 
-import { authLogin, registerUser } from "@/lib/store/features/auth-slice";
+import { authLogin, registerUser } from "@/lib/store/thunks/auth-thunk";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hook";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
@@ -10,7 +10,8 @@ import { FcGoogle } from "react-icons/fc";
 import Image from "next/image";
 import { handleGoogleAuth } from "./home";
 import { useSession } from "next-auth/react";
-import { fetchAllUsers } from "@/lib/store/features/user-slice";
+import { fetchAllUsers } from "@/lib/store/thunks/user-thunk";
+import { toast } from "react-toastify";
 
 const Register = () => {
   const dispatch = useAppDispatch();
@@ -46,7 +47,7 @@ const Register = () => {
         "registration",
         JSON.stringify({ name: formData.name, email: formData.email })
       );
-      alert("OTP sent to your email");
+      toast.info("OTP sent to your email");
       router.push("/verify-otp");
     } catch (err) {
       setError((err as string) && "Email already existing");

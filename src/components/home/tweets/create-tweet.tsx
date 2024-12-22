@@ -1,16 +1,18 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { FiImage, FiAlignLeft, FiSmile, FiMapPin } from "react-icons/fi";
 import { MdOutlineGifBox } from "react-icons/md";
 import { LuCalendarClock } from "react-icons/lu";
-// import axios from "axios";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
-import { createTweet, fetchTweets } from "@/lib/store/features/tweets-slice";
+import { createTweet, fetchTweets } from "@/lib/store/thunks/tweet-thunk";
 import { useAppDispatch } from "@/lib/store/hook";
 import { User } from "@/components/side-bar/side-bar";
+import { Button } from "@/components/ui/button";
+import EmojiPicker from "emoji-picker-react";
+import { toast } from "react-toastify";
 
 const PostInput: React.FC = () => {
   const router = useRouter();
@@ -20,11 +22,28 @@ const PostInput: React.FC = () => {
   const [isPosting, setIsPosting] = useState<boolean>(false);
   const [loginedUser, setLoginedUser] = useState<User>();
   const [isText, setIsText] = useState<boolean>(false);
+  const [showEmojiPicker, setShowEmojiPicker] = useState<boolean>(false);
+  const emojiPickerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const currentUser = Cookies.get("user");
     const user = JSON.parse(currentUser || "{}");
     setLoginedUser(user);
+
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        emojiPickerRef.current &&
+        !emojiPickerRef.current.contains(event.target as Node)
+      ) {
+        setShowEmojiPicker(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
   }, []);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -40,7 +59,7 @@ const PostInput: React.FC = () => {
 
   const handlePost = async () => {
     if (!tweetText && files.length === 0) {
-      alert("Please add some text or media to post.");
+      toast.info("Please add some text or media to post.");
       return;
     }
 
@@ -61,7 +80,7 @@ const PostInput: React.FC = () => {
     const currentUser = Cookies.get("user");
     const user = JSON.parse(currentUser || "{}");
     if (!user.token) {
-      alert("Authentication failed. Please log in.");
+      toast.error("Authentication failed. Please log in.");
       router.push("/signin");
       return;
     }
@@ -71,16 +90,21 @@ const PostInput: React.FC = () => {
     try {
       setIsPosting(true);
       await dispatch(createTweet(formData)).unwrap();
-      alert("Tweet posted successfully!");
+      toast.success("Tweet posted successfully!");
       dispatch(fetchTweets());
       setTweetText("");
       setFiles([]);
     } catch (error) {
       console.error("Error posting tweet:", error);
-      alert("Error posting tweet. Please check the console for details.");
+      toast.error("User not logined!!");
     } finally {
       setIsPosting(false);
     }
+  };
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const addEmoji = (emojiObject: any) => {
+    setTweetText((prev) => prev + emojiObject.emoji);
   };
 
   return (
@@ -107,7 +131,7 @@ const PostInput: React.FC = () => {
             value={tweetText}
             onChange={(e) => {
               setTweetText(e.target.value);
-              setIsText(!tweetText ? false : true);
+              setIsText(e.target.value.length < 1 ? false : true);
             }}
             className="w-full bg-transparent text-gray-300 placeholder-gray-500 outline-none text-lg"
           />
@@ -151,12 +175,12 @@ const PostInput: React.FC = () => {
             return (
               <div key={index} className="relative group">
                 {preview}
-                <button
+                <Button
                   onClick={() => removeFile(index)}
                   className="absolute top-2 right-2 bg-black bg-opacity-50 text-white p-1 rounded-full text-sm opacity-0 group-hover:opacity-100"
                 >
                   ✕
-                </button>
+                </Button>
               </div>
             );
           })}
@@ -178,20 +202,34 @@ const PostInput: React.FC = () => {
           />
           <MdOutlineGifBox className="w-5 h-5 cursor-pointer hover:text-blue-400" />
           <FiAlignLeft className="w-5 h-5 cursor-pointer hover:text-blue-400" />
-          <FiSmile className="w-5 h-5 cursor-pointer hover:text-blue-400" />
+
+          <div className="relative" ref={emojiPickerRef}>
+            <FiSmile
+              className="w-5 h-5 cursor-pointer hover:text-blue-400"
+              onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+            />
+            {showEmojiPicker && (
+              <div className="absolute  left-0 z-50">
+                <EmojiPicker onEmojiClick={addEmoji} />
+              </div>
+            )}
+          </div>
+
           <LuCalendarClock className="w-5 h-5 cursor-pointer hover:text-blue-400" />
           <FiMapPin className="w-5 h-5 cursor-pointer hover:text-blue-400" />
         </div>
 
-        <button
+        <Button
           onClick={handlePost}
           disabled={isPosting}
           className={`${
-            isText ? "bg-white text-black" : "bg-gray-600"
+            isText
+              ? "bg-white text-black hover:bg-gray-200"
+              : "bg-gray-600 hover:bg-gray-600"
           }  px-6 py-2 rounded-3xl`}
         >
           {isPosting ? "Posting..." : "Post"}
-        </button>
+        </Button>
       </div>
     </div>
   );

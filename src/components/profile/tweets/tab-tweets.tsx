@@ -2,7 +2,7 @@
 
 import React, { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hook";
-import { fetchUserTweet } from "@/lib/store/features/tweets-slice";
+import { fetchUserTweet } from "@/lib/store/thunks/tweet-thunk";
 import { useParams } from "next/navigation";
 import Tweet from "@/components/home/tweets/tweet";
 

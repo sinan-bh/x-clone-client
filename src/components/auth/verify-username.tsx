@@ -1,10 +1,11 @@
 "use client";
 
-import { finalSubmission } from "@/lib/store/features/auth-slice";
+import { finalSubmission } from "@/lib/store/thunks/auth-thunk";
 import { useAppDispatch } from "@/lib/store/hook";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
+import { toast } from "react-toastify";
 
 export default function VerifyUserName() {
   const [password, setPassword] = useState<string>("");
@@ -55,7 +56,7 @@ export default function VerifyUserName() {
           password: password,
         })
       ).unwrap();
-      alert("login successfully");
+      toast.success("Sign In Successful");
       router.push("/signin");
     } catch (err) {
       setError((err as string) && "User name already existing");

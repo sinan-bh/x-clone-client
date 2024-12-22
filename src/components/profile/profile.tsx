@@ -7,15 +7,15 @@ import Cookies from "js-cookie";
 import { LuCalendarClock } from "react-icons/lu";
 import EditProfileModal from "./edit-profile";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hook";
+import { fetchUserData, toggleFollow } from "@/lib/store/thunks/user-thunk";
 import {
-  fetchUserData,
   setFollowStatus,
   setIsOwnProfile,
-  toggleFollow,
 } from "@/lib/store/features/user-slice";
 import Link from "next/link";
 import TabContent from "./tweets/tab-tweets";
 import SearchSection from "../home/search-section/search-section";
+import { Button } from "../ui/button";
 
 const ProfilePage: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -110,8 +110,8 @@ const ProfilePage: React.FC = () => {
           </div>
 
           <div className="flex justify-end m-4">
-            <button
-              className="bg-white text-black hover:bg-gray-200 border py-2 rounded-2xl px-10 text-sm"
+            <Button
+              className="border py-2 rounded-2xl px-5 hover:bg-gray-900 text-sm"
               onClick={() =>
                 isOwnProfile
                   ? handleEditProfile()
@@ -119,7 +119,7 @@ const ProfilePage: React.FC = () => {
               }
             >
               {isOwnProfile ? "Edit Profile" : followStatus}
-            </button>
+            </Button>
           </div>
 
           <div className="mt-12 px-6">

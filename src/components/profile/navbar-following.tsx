@@ -5,7 +5,7 @@ import SearchSection from "../home/search-section/search-section";
 import FollowStatusUser from "./follow-status";
 import { useParams } from "next/navigation";
 import Link from "next/link";
-import { fetchUserData } from "@/lib/store/features/user-slice";
+import { fetchUserData } from "@/lib/store/thunks/user-thunk";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hook";
 
 const FollowStatus: React.FC = () => {

@@ -2,14 +2,14 @@
 
 import {
   fetchFollowersOrFollowing,
-  setFollowStatus,
   toggleFollow,
-} from "@/lib/store/features/user-slice";
+} from "@/lib/store/thunks/user-thunk";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hook";
 import Link from "next/link";
+import { setFollowStatus } from "@/lib/store/features/user-slice";
 
 type FollowStatusUserProps = {
   userName: string;

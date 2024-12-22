@@ -1,24 +1,40 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Tweet from "@/components/home/tweets/tweet";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hook";
-import { fetchTweets } from "@/lib/store/features/tweets-slice";
+import {
+  fetchFollowingUserPost,
+  fetchTweets,
+} from "@/lib/store/thunks/tweet-thunk";
 
 const TweetList: React.FC = () => {
   const dispatch = useAppDispatch();
-  const { tweets, loading } = useAppSelector((state) => state.tweets);
+  const { tweets, followingTweets, loading } = useAppSelector(
+    (state) => state.tweets
+  );
+  const [isStatus, setIsStatus] = useState("");
 
   useEffect(() => {
     dispatch(fetchTweets());
+    dispatch(fetchFollowingUserPost());
   }, [dispatch]);
+
+  useEffect(() => {
+    const status = JSON.parse(localStorage.getItem("status") || "forYou");
+    setIsStatus(status);
+  }, []);
+
+  console.log(followingTweets);
+
+  const posts = isStatus === "forYou" ? tweets : followingTweets;
 
   return (
     <div className="bg-black min-h-screen text-white">
       {loading ? (
         <div className="text-center text-gray-400">Loading tweets...</div>
       ) : (
-        tweets?.map((tweet, index) => <Tweet key={index} {...tweet} />)
+        posts?.map((tweet, index) => <Tweet key={index} {...tweet} />)
       )}
     </div>
   );
