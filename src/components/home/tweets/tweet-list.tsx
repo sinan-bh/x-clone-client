@@ -10,20 +10,23 @@ import {
 
 const TweetList: React.FC = () => {
   const dispatch = useAppDispatch();
-  const { tweets, followingTweets, loading } = useAppSelector(
+  const { tweets, followingTweets, activeTab, loading } = useAppSelector(
     (state) => state.tweets
   );
   const [isStatus, setIsStatus] = useState("");
+  useEffect(() => {
+    const status = JSON.parse(localStorage.getItem("status") || "forYou");
+    setIsStatus(status);
+  }, [activeTab]);
 
   useEffect(() => {
     dispatch(fetchTweets());
     dispatch(fetchFollowingUserPost());
-  }, [dispatch]);
+  }, [activeTab, dispatch]);
 
-  useEffect(() => {
-    const status = JSON.parse(localStorage.getItem("status") || "forYou");
-    setIsStatus(status);
-  }, []);
+  console.log(tweets, "aaa");
+
+  console.log(activeTab);
 
   console.log(followingTweets);
 

@@ -59,9 +59,7 @@ export const likedPost = createAsyncThunk(
   "tweets/likedPost",
   async (postId: string, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.post(`/tweets/${postId}`);
-      console.log(response.data.data);
-
+      const response = await axiosInstance.post(`/tweets/likes/${postId}`);
       return response.data.data;
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -96,6 +94,24 @@ export const fetchFollowingUserPost = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.get(`/tweets/following`);
+      return response.data.data;
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to fetch tweets"
+      );
+    }
+  }
+);
+
+export const fetchLikedTweets = createAsyncThunk(
+  "tweets/fetchLikedTweets",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.get(`/tweets/liked`);
+      console.log(response.data.data);
+
       return response.data.data;
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any

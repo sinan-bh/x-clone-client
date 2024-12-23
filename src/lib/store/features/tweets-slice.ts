@@ -31,6 +31,7 @@ interface TweetsState {
   tweets: TweetData[];
   followingTweets: TweetData[];
   userTweet: TweetData[] | null;
+  activeTab: "forYou" | "following";
   loading: boolean;
   error: string | null;
 }
@@ -38,6 +39,7 @@ interface TweetsState {
 const initialState: TweetsState = {
   tweets: [],
   followingTweets: [],
+  activeTab: "forYou",
   userTweet: null,
   loading: false,
   error: null,
@@ -46,7 +48,11 @@ const initialState: TweetsState = {
 const tweetsSlice = createSlice({
   name: "tweets",
   initialState,
-  reducers: {},
+  reducers: {
+    setActiveTab: (state, action) => {
+      state.activeTab = action.payload;
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchTweets.pending, (state) => {
@@ -99,5 +105,7 @@ const tweetsSlice = createSlice({
       });
   },
 });
+
+export const { setActiveTab } = tweetsSlice.actions;
 
 export default tweetsSlice.reducer;

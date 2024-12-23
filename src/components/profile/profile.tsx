@@ -16,6 +16,7 @@ import Link from "next/link";
 import TabContent from "./tweets/tab-tweets";
 import SearchSection from "../home/search-section/search-section";
 import { Button } from "../ui/button";
+import { fetchLikedTweets } from "@/lib/store/thunks/tweet-thunk";
 
 const ProfilePage: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -32,6 +33,7 @@ const ProfilePage: React.FC = () => {
     if (currentUser) {
       const user = JSON.parse(currentUser);
       dispatch(fetchUserData(userName));
+      dispatch(fetchLikedTweets());
       dispatch(setIsOwnProfile(user.userName === userName));
     }
   }, [userName, dispatch]);
