@@ -5,20 +5,17 @@ import React, { useEffect, useState } from "react";
 import {
   FaHeart,
   FaRegHeart,
-  FaComment,
   FaRetweet,
   FaBookmark,
   FaRegBookmark,
 } from "react-icons/fa";
 import { formatDistanceToNow, parseISO } from "date-fns";
 import Link from "next/link";
-import {
-  likedPost,
-  savedPost,
-} from "@/lib/store/thunks/tweet-thunk";
+import { likedPost, savedPost } from "@/lib/store/thunks/tweet-thunk";
 import { useAppDispatch } from "@/lib/store/hook";
 import Cookies from "js-cookie";
 import { UserDetails } from "@/lib/store/features/tweets-slice";
+import CommentBox from "./comment-box";
 
 interface TweetProps {
   _id: string;
@@ -154,10 +151,10 @@ const Tweet: React.FC<TweetProps> = ({
         )}
 
         <div className="flex justify-around mt-4 text-gray-400">
-          <button className="flex items-center space-x-1 hover:text-blue-500">
-            <FaComment />
+          <div className="flex justify-center items-center">
+            <CommentBox postId={_id} />
             <span>{comments.length}</span>
-          </button>
+          </div>
           <button
             onClick={handleRepost}
             className="flex items-center space-x-1 hover:text-green-500"
