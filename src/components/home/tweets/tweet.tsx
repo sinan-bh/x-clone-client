@@ -11,8 +11,12 @@ import {
 } from "react-icons/fa";
 import { formatDistanceToNow, parseISO } from "date-fns";
 import Link from "next/link";
-import { likedPost, savedPost } from "@/lib/store/thunks/tweet-thunk";
-import { useAppDispatch } from "@/lib/store/hook";
+import {
+  fetchTweetById,
+  likedPost,
+  savedPost,
+} from "@/lib/store/thunks/tweet-thunk";
+import { useAppDispatch, useAppSelector } from "@/lib/store/hook";
 import Cookies from "js-cookie";
 import { UserDetails } from "@/lib/store/features/tweets-slice";
 import CommentBox from "./comment-box";
@@ -45,6 +49,7 @@ const Tweet: React.FC<TweetProps> = ({
   const [likesCount, setLikesCount] = useState(likes.length);
   const [repost, setRepost] = useState(reposts.length);
   const dispatch = useAppDispatch();
+  const { tweet } = useAppSelector((state) => state.tweets);
 
   useEffect(() => {
     const currentUser = Cookies.get("user");
@@ -94,6 +99,10 @@ const Tweet: React.FC<TweetProps> = ({
 
     return timeAgo;
   };
+
+  useEffect(() => {
+    dispatch(fetchTweetById(_id));
+  }, [dispatch, _id]);
 
   return (
     <div className="bg-black text-white border-b border-gray-700 p-4 flex space-x-4">
@@ -152,7 +161,7 @@ const Tweet: React.FC<TweetProps> = ({
 
         <div className="flex justify-around mt-4 text-gray-400">
           <div className="flex justify-center items-center">
-            <CommentBox postId={_id} />
+            <CommentBox tweet={tweet} />
             <span>{comments.length}</span>
           </div>
           <button

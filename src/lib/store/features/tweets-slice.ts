@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import {
   fetchFollowingUserPost,
+  fetchTweetById,
   fetchTweets,
   fetchUserTweet,
 } from "../thunks/tweet-thunk";
@@ -29,6 +30,7 @@ export interface TweetData {
 
 interface TweetsState {
   tweets: TweetData[];
+  tweet: TweetData | null;
   followingTweets: TweetData[];
   userTweet: TweetData[] | null;
   activeTab: "forYou" | "following";
@@ -38,6 +40,7 @@ interface TweetsState {
 
 const initialState: TweetsState = {
   tweets: [],
+  tweet: null,
   followingTweets: [],
   activeTab: "forYou",
   userTweet: null,
@@ -99,7 +102,23 @@ const tweetsSlice = createSlice({
         }
       )
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      .addCase(fetchUserTweet.rejected, (state, action: any) => {
+      // .addCase(fetchUserTweet.rejected, (state, action: any) => {
+      //   state.loading = false;
+      //   state.error = action.payload;
+      // })
+      // .addCase(fetchTweetById.pending, (state) => {
+      //   state.loading = true;
+      //   state.error = null;
+      // })
+      .addCase(
+        fetchTweetById.fulfilled,
+        (state, action: PayloadAction<TweetData>) => {
+          // state.loading = false;
+          state.tweet = action.payload;
+        }
+      )
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      .addCase(fetchTweetById.rejected, (state, action: any) => {
         state.loading = false;
         state.error = action.payload;
       });

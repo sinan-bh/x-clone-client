@@ -14,16 +14,20 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { FaComment } from "react-icons/fa";
+import { useAppDispatch } from "@/lib/store/hook";
+import { TweetData } from "@/lib/store/features/tweets-slice";
+import { createComment } from "@/lib/store/thunks/tweet-thunk";
 
 type CommentProps = {
-  postId: string;
+  tweet: TweetData | null;
 };
 
-const CommentBox: React.FC<CommentProps> = ({ postId }) => {
+const CommentBox: React.FC<CommentProps> = ({ tweet }) => {
   const [commentText, setCommentText] = useState<string>("");
   const [showEmojiPicker, setShowEmojiPicker] = useState<boolean>(false);
   const emojiPickerRef = useRef<HTMLDivElement>(null);
-  console.log(postId);
+  const dispatch = useAppDispatch();
+  console.log(tweet);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -50,9 +54,16 @@ const CommentBox: React.FC<CommentProps> = ({ postId }) => {
       toast.info("Comment cannot be empty");
       return;
     }
+    dispatch(
+      createComment({ postId: tweet?._id as string, text: commentText })
+    ).unwrap();
     toast.success(`Comment submitted: ${commentText}`);
     setCommentText("");
   };
+
+  // useEffect(() => {
+  //   dispatch(fetchTweetById(postId));
+  // }, [dispatch, postId]);
 
   return (
     <Dialog>
@@ -65,6 +76,21 @@ const CommentBox: React.FC<CommentProps> = ({ postId }) => {
         <DialogHeader>
           <DialogTitle>Post your reply</DialogTitle>
         </DialogHeader>
+        <div className="flex">
+          <div className="flex ">
+            <div className="flex flex-col items-center">
+              <div>icon</div>
+              <div className="border-l  h-28"></div>
+            </div>
+            <div>
+              <div className="flex pl-2 gap-2">
+                <div>{tweet?.user.name}</div>
+                <div>{tweet?.user.userName}</div>
+              </div>
+              <div className="pl-2">{tweet?.text}</div>
+            </div>
+          </div>
+        </div>
         <div className="flex items-start gap-3">
           <div className="w-10 h-10  text-white flex items-center justify-center rounded-full">
             S
