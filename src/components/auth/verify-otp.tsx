@@ -1,6 +1,6 @@
 "use client";
 
-import { verifyOtp } from "@/lib/store/features/auth-slice";
+import { verifyOtp } from "@/lib/store/thunks/auth-thunk";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hook";
 import Image from "next/image";
 import { useRouter } from "next/navigation";

@@ -2,9 +2,10 @@
 
 import React, { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hook";
-import { fetchUserTweet } from "@/lib/store/thunks/tweet-thunk";
+import { fetchComments, fetchUserTweet } from "@/lib/store/thunks/tweet-thunk";
 import { useParams } from "next/navigation";
 import Tweet from "@/components/home/tweets/tweet";
+import Comments from "./comments";
 
 interface TabContentProps {
   activeTab: "tweets" | "replies" | "likes";
@@ -13,12 +14,17 @@ interface TabContentProps {
 
 const TabContent: React.FC<TabContentProps> = ({ activeTab, userId }) => {
   const { userName }: { userName: string } = useParams();
-  const { userTweet, loading, error } = useAppSelector((state) => state.tweets);
+  const { userTweet, comments, loading, error } = useAppSelector(
+    (state) => state.tweets
+  );
   const dispatch = useAppDispatch();
+
+  console.log(userTweet);
 
   useEffect(() => {
     if (userName) {
       dispatch(fetchUserTweet(userId));
+      dispatch(fetchComments());
     }
   }, [dispatch, userName, userId]);
 
@@ -33,8 +39,8 @@ const TabContent: React.FC<TabContentProps> = ({ activeTab, userId }) => {
         ));
 
       case "replies":
-        return userTweet?.map((tweet) => (
-          <Tweet key={tweet.createdAt} {...tweet} />
+        return comments?.map((comment) => (
+          <Comments key={comment._id} comments={comment || null} />
         ));
 
       case "likes":

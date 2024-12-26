@@ -21,7 +21,7 @@ import Cookies from "js-cookie";
 import { UserDetails } from "@/lib/store/features/tweets-slice";
 import CommentBox from "./comment-box";
 
-interface TweetProps {
+export interface TweetProps {
   _id: string;
   user: UserDetails;
   text: string;
@@ -32,6 +32,10 @@ interface TweetProps {
   reposts: string[];
   createdAt: string;
 }
+
+type LoginedUser = {
+  profilePicture: string;
+};
 
 const Tweet: React.FC<TweetProps> = ({
   _id,
@@ -50,11 +54,13 @@ const Tweet: React.FC<TweetProps> = ({
   const [repost, setRepost] = useState(reposts.length);
   const dispatch = useAppDispatch();
   const { tweet } = useAppSelector((state) => state.tweets);
+  const [loginedUser, setLoginedUser] = useState<LoginedUser>();
 
   useEffect(() => {
     const currentUser = Cookies.get("user");
     const user = JSON.parse(currentUser || "{}");
     const isLiked = likes.includes(user.id) ? true : false;
+    setLoginedUser(user);
     setLiked(isLiked ? true : false);
 
     const isSaved = saved.includes(user.id);
@@ -161,7 +167,10 @@ const Tweet: React.FC<TweetProps> = ({
 
         <div className="flex justify-around mt-4 text-gray-400">
           <div className="flex justify-center items-center">
-            <CommentBox tweet={tweet} />
+            <CommentBox
+              tweet={tweet}
+              loginedUser={loginedUser || { profilePicture: "" }}
+            />
             <span>{comments.length}</span>
           </div>
           <button

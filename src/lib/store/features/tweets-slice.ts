@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import {
+  fetchComments,
   fetchFollowingUserPost,
   fetchTweetById,
   fetchTweets,
@@ -28,12 +29,20 @@ export interface TweetData {
   createdAt: string;
 }
 
+export interface CommentData {
+  _id: string;
+  user: UserDetails;
+  tweet: TweetData[];
+  text: string;
+}
+
 interface TweetsState {
   tweets: TweetData[];
   tweet: TweetData | null;
   followingTweets: TweetData[];
   userTweet: TweetData[] | null;
   activeTab: "forYou" | "following";
+  comments: CommentData[] | null;
   loading: boolean;
   error: string | null;
 }
@@ -43,6 +52,7 @@ const initialState: TweetsState = {
   tweet: null,
   followingTweets: [],
   activeTab: "forYou",
+  comments: [],
   userTweet: null,
   loading: false,
   error: null,
@@ -102,18 +112,29 @@ const tweetsSlice = createSlice({
         }
       )
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      // .addCase(fetchUserTweet.rejected, (state, action: any) => {
-      //   state.loading = false;
-      //   state.error = action.payload;
-      // })
-      // .addCase(fetchTweetById.pending, (state) => {
-      //   state.loading = true;
-      //   state.error = null;
-      // })
+      .addCase(fetchUserTweet.rejected, (state, action: any) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(fetchComments.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(
+        fetchComments.fulfilled,
+        (state, action: PayloadAction<CommentData[]>) => {
+          state.loading = false;
+          state.comments = action.payload;
+        }
+      )
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      .addCase(fetchComments.rejected, (state, action: any) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
       .addCase(
         fetchTweetById.fulfilled,
         (state, action: PayloadAction<TweetData>) => {
-          // state.loading = false;
           state.tweet = action.payload;
         }
       )
