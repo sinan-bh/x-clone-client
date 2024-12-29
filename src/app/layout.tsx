@@ -37,7 +37,11 @@ export default async function RootLayout({
       >
         <StoreProvider>
           <SessionProvider session={session}>
-            <ToastContainer position="top-right" autoClose={3000} />
+            <ToastContainer
+              position="top-right"
+              autoClose={3000}
+              theme="dark"
+            />
             {children}
           </SessionProvider>
         </StoreProvider>

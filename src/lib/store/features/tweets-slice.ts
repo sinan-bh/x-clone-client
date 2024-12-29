@@ -2,6 +2,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import {
   fetchComments,
   fetchFollowingUserPost,
+  fetchLikedTweets,
   fetchTweetById,
   fetchTweets,
   fetchUserTweet,
@@ -41,6 +42,7 @@ interface TweetsState {
   tweet: TweetData | null;
   followingTweets: TweetData[];
   userTweet: TweetData[] | null;
+  userLikes: TweetData[] | null;
   activeTab: "forYou" | "following";
   comments: CommentData[] | null;
   loading: boolean;
@@ -51,6 +53,7 @@ const initialState: TweetsState = {
   tweets: [],
   tweet: null,
   followingTweets: [],
+  userLikes: [],
   activeTab: "forYou",
   comments: [],
   userTweet: null,
@@ -129,6 +132,22 @@ const tweetsSlice = createSlice({
       )
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .addCase(fetchComments.rejected, (state, action: any) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(fetchLikedTweets.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(
+        fetchLikedTweets.fulfilled,
+        (state, action: PayloadAction<TweetData[]>) => {
+          state.loading = false;
+          state.userLikes = action.payload;
+        }
+      )
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      .addCase(fetchLikedTweets.rejected, (state, action: any) => {
         state.loading = false;
         state.error = action.payload;
       })

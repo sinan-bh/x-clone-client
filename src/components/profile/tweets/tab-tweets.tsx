@@ -2,7 +2,11 @@
 
 import React, { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hook";
-import { fetchComments, fetchUserTweet } from "@/lib/store/thunks/tweet-thunk";
+import {
+  fetchComments,
+  fetchLikedTweets,
+  fetchUserTweet,
+} from "@/lib/store/thunks/tweet-thunk";
 import { useParams } from "next/navigation";
 import Tweet from "@/components/home/tweets/tweet";
 import Comments from "./comments";
@@ -14,19 +18,20 @@ interface TabContentProps {
 
 const TabContent: React.FC<TabContentProps> = ({ activeTab, userId }) => {
   const { userName }: { userName: string } = useParams();
-  const { userTweet, comments, loading, error } = useAppSelector(
+  const { userTweet, userLikes, comments, loading, error } = useAppSelector(
     (state) => state.tweets
   );
   const dispatch = useAppDispatch();
-
-  console.log(userTweet);
 
   useEffect(() => {
     if (userName) {
       dispatch(fetchUserTweet(userId));
       dispatch(fetchComments());
+      dispatch(fetchLikedTweets());
     }
   }, [dispatch, userName, userId]);
+
+  console.log(userLikes);
 
   const renderContent = () => {
     if (loading) return <div>Loading...</div>;
@@ -44,9 +49,7 @@ const TabContent: React.FC<TabContentProps> = ({ activeTab, userId }) => {
         ));
 
       case "likes":
-        return userTweet
-          ?.filter((tweet) => tweet.likes)
-          .map((tweet) => <Tweet key={tweet.createdAt} {...tweet} />);
+        return userLikes?.map((tweet, i) => <Tweet key={i} {...tweet} />);
 
       default:
         return null;

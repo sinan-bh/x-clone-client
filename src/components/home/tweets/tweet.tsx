@@ -106,9 +106,9 @@ const Tweet: React.FC<TweetProps> = ({
     return timeAgo;
   };
 
-  useEffect(() => {
-    dispatch(fetchTweetById(_id));
-  }, [dispatch, _id]);
+  const handleCommand = (tweetId: string) => {
+    dispatch(fetchTweetById(tweetId));
+  };
 
   return (
     <div className="bg-black text-white border-b border-gray-700 p-4 flex space-x-4">
@@ -145,7 +145,7 @@ const Tweet: React.FC<TweetProps> = ({
         <p className="mt-2 text-sm">{text}</p>
         {media && (
           <div
-            className={`mt-4 ${
+            className={`mt-4 max-w-full ${
               media.length > 1 ? "grid grid-cols-2 gap-2 sm:grid-cols-3" : ""
             }`}
           >
@@ -167,10 +167,12 @@ const Tweet: React.FC<TweetProps> = ({
 
         <div className="flex justify-around mt-4 text-gray-400">
           <div className="flex justify-center items-center">
-            <CommentBox
-              tweet={tweet}
-              loginedUser={loginedUser || { profilePicture: "" }}
-            />
+            <div onClick={() => handleCommand(_id)}>
+              <CommentBox
+                tweet={tweet}
+                loginedUser={loginedUser || { profilePicture: "" }}
+              />
+            </div>
             <span>{comments.length}</span>
           </div>
           <button

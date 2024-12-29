@@ -26,7 +26,6 @@ type CommentProps = {
 const CommentBox: React.FC<CommentProps> = ({ tweet, loginedUser }) => {
   const [commentText, setCommentText] = useState<string>("");
   const dispatch = useAppDispatch();
-  console.log(tweet);
 
   const handleSubmit = () => {
     if (commentText.trim() === "") {

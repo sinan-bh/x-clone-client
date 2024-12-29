@@ -177,8 +177,9 @@ const ProfilePage: React.FC = () => {
               </Link>
             ))}
           </div>
-
+          {/* <div className="border-b border-gray-600"> */}
           <TabContent activeTab={activeTab} userId={userDetails._id} />
+          {/* </div */}
 
           {showModal && (
             <EditProfileModal user={userDetails} onClose={handleCloseModal} />

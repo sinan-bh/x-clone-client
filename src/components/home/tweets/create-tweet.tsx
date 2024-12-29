@@ -11,7 +11,7 @@ import { createTweet, fetchTweets } from "@/lib/store/thunks/tweet-thunk";
 import { useAppDispatch } from "@/lib/store/hook";
 import { User } from "@/components/side-bar/side-bar";
 import { Button } from "@/components/ui/button";
-import EmojiPicker from "emoji-picker-react";
+import EmojiPicker, { Theme } from "emoji-picker-react";
 import { toast } from "react-toastify";
 
 const PostInput: React.FC = () => {
@@ -99,6 +99,7 @@ const PostInput: React.FC = () => {
       toast.error("User not logined!!");
     } finally {
       setIsPosting(false);
+      setIsText(false);
     }
   };
 
@@ -210,7 +211,7 @@ const PostInput: React.FC = () => {
             />
             {showEmojiPicker && (
               <div className="absolute  left-0 z-50">
-                <EmojiPicker onEmojiClick={addEmoji} />
+                <EmojiPicker onEmojiClick={addEmoji} theme={Theme.DARK} />
               </div>
             )}
           </div>

@@ -13,6 +13,9 @@ const TweetList: React.FC = () => {
   const { tweets, followingTweets, activeTab, loading } = useAppSelector(
     (state) => state.tweets
   );
+
+  console.log(tweets, "ttt");
+
   const [isStatus, setIsStatus] = useState("");
   useEffect(() => {
     const status = JSON.parse(localStorage.getItem("status") || "forYou");
@@ -23,12 +26,6 @@ const TweetList: React.FC = () => {
     dispatch(fetchTweets());
     dispatch(fetchFollowingUserPost());
   }, [activeTab, dispatch]);
-
-  console.log(tweets, "aaa");
-
-  console.log(activeTab);
-
-  console.log(followingTweets);
 
   const posts = isStatus === "forYou" ? tweets : followingTweets;
 

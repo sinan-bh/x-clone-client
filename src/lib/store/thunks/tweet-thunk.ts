@@ -76,7 +76,6 @@ export const savedPost = createAsyncThunk(
   async (postId: string, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.post(`/tweets/saved/${postId}`);
-      console.log(response.data.data);
 
       return response.data.data;
 
@@ -110,8 +109,6 @@ export const fetchLikedTweets = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.get(`/tweets/liked`);
-      console.log(response.data.data);
-
       return response.data.data;
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -128,7 +125,6 @@ export const fetchTweetById = createAsyncThunk(
   async (postId: string, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.get(`/tweets/${postId}`);
-      console.log(response.data.data);
 
       return response.data.data;
 
@@ -167,7 +163,6 @@ export const fetchComments = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.get(`/tweets/comment`);
-      console.log(response.data.data);
 
       return response.data.data;
 
