@@ -18,22 +18,22 @@ import {
 } from "@/lib/store/thunks/tweet-thunk";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hook";
 import Cookies from "js-cookie";
-import { UserDetails } from "@/lib/store/features/tweets-slice";
+import { Comment, UserDetails } from "@/lib/store/features/tweets-slice";
 import CommentBox from "./comment-box";
 
 export interface TweetProps {
-  _id: string;
-  user: UserDetails;
-  text: string;
+  _id?: string;
+  user?: UserDetails;
+  text?: string;
   media?: string[];
-  likes: string[];
-  saved: string[];
-  comments: string[];
-  reposts: string[];
-  createdAt: string;
+  likes?: string[];
+  saved?: string[];
+  comments?: Comment[];
+  reposts?: string[];
+  createdAt?: string;
 }
 
-type LoginedUser = {
+export type LoginedUser = {
   profilePicture: string;
 };
 
@@ -50,8 +50,8 @@ const Tweet: React.FC<TweetProps> = ({
 }) => {
   const [liked, setLiked] = useState(false);
   const [save, setSave] = useState(false);
-  const [likesCount, setLikesCount] = useState(likes.length);
-  const [repost, setRepost] = useState(reposts.length);
+  const [likesCount, setLikesCount] = useState(likes?.length);
+  const [repost, setRepost] = useState(reposts?.length);
   const dispatch = useAppDispatch();
   const { tweet } = useAppSelector((state) => state.tweets);
   const [loginedUser, setLoginedUser] = useState<LoginedUser>();
@@ -59,11 +59,11 @@ const Tweet: React.FC<TweetProps> = ({
   useEffect(() => {
     const currentUser = Cookies.get("user");
     const user = JSON.parse(currentUser || "{}");
-    const isLiked = likes.includes(user.id) ? true : false;
+    const isLiked = likes?.includes(user.id) ? true : false;
     setLoginedUser(user);
     setLiked(isLiked ? true : false);
 
-    const isSaved = saved.includes(user.id);
+    const isSaved = saved?.includes(user.id);
     setSave(isSaved ? true : false);
   }, [likes, saved]);
 
@@ -82,7 +82,7 @@ const Tweet: React.FC<TweetProps> = ({
   };
 
   const handleRepost = () => {
-    setRepost(repost + 1);
+    setRepost(repost && repost + 1);
   };
 
   const handleSave = async (postId: string) => {
@@ -140,40 +140,46 @@ const Tweet: React.FC<TweetProps> = ({
               @{user?.userName}
             </Link>
           </div>
-          <p className="text-xs text-gray-500">{getTimeAgo(createdAt)}</p>
+          <p className="text-xs text-gray-500">
+            {createdAt && getTimeAgo(createdAt)}
+          </p>
         </div>
-        <p className="mt-2 text-sm">{text}</p>
-        {media && (
-          <div
-            className={`mt-4 max-w-full ${
-              media.length > 1 ? "grid grid-cols-2 gap-2 sm:grid-cols-3" : ""
-            }`}
-          >
-            {media.map((m, i) => (
-              <div key={i} className={`${media.length > 1 ? "" : "w-full"}`}>
-                <Image
-                  src={m || ""}
-                  alt="Media"
-                  width={media.length > 1 ? 200 : 500}
-                  height={media.length > 1 ? 200 : 300}
-                  className={`rounded-lg ${
-                    media.length > 1 ? " object-cover  w-full" : "h-auto w-full"
-                  }`}
-                />
-              </div>
-            ))}
-          </div>
-        )}
+        <Link href={`/${user?.userName}/status/${_id}`}>
+          <p className="mt-2 text-sm">{text}</p>
+          {media && (
+            <div
+              className={`mt-4 max-w-full ${
+                media.length > 1 ? "grid grid-cols-2 gap-2 sm:grid-cols-3" : ""
+              }`}
+            >
+              {media.map((m, i) => (
+                <div key={i} className={`${media.length > 1 ? "" : "w-full"}`}>
+                  <Image
+                    src={m || ""}
+                    alt="Media"
+                    width={media.length > 1 ? 200 : 500}
+                    height={media.length > 1 ? 200 : 300}
+                    className={`rounded-lg ${
+                      media.length > 1
+                        ? " object-cover  w-full"
+                        : "h-auto w-full"
+                    }`}
+                  />
+                </div>
+              ))}
+            </div>
+          )}
+        </Link>
 
         <div className="flex justify-around mt-4 text-gray-400">
           <div className="flex justify-center items-center">
-            <div onClick={() => handleCommand(_id)}>
+            <div onClick={() => handleCommand(_id || "")}>
               <CommentBox
                 tweet={tweet}
                 loginedUser={loginedUser || { profilePicture: "" }}
               />
             </div>
-            <span>{comments.length}</span>
+            <span>{comments?.length}</span>
           </div>
           <button
             onClick={handleRepost}
@@ -183,7 +189,7 @@ const Tweet: React.FC<TweetProps> = ({
             <span>{reposts}</span>
           </button>
           <button
-            onClick={() => handleLike(_id)}
+            onClick={() => handleLike(_id || "")}
             className="flex items-center space-x-1 hover:text-red-500"
           >
             {liked ? <FaHeart className="text-red-500" /> : <FaRegHeart />}
@@ -191,7 +197,7 @@ const Tweet: React.FC<TweetProps> = ({
           </button>
 
           <button
-            onClick={() => handleSave(_id)}
+            onClick={() => handleSave(_id || "")}
             className="flex items-center space-x-1 hover:text-yellow-500"
           >
             {save ? (

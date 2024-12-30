@@ -31,8 +31,6 @@ const TabContent: React.FC<TabContentProps> = ({ activeTab, userId }) => {
     }
   }, [dispatch, userName, userId]);
 
-  console.log(userLikes);
-
   const renderContent = () => {
     if (loading) return <div>Loading...</div>;
     if (error) return <div className="text-red-500">{error}</div>;

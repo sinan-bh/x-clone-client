@@ -14,8 +14,6 @@ const TweetList: React.FC = () => {
     (state) => state.tweets
   );
 
-  console.log(tweets, "ttt");
-
   const [isStatus, setIsStatus] = useState("");
   useEffect(() => {
     const status = JSON.parse(localStorage.getItem("status") || "forYou");

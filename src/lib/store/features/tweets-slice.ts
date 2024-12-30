@@ -18,6 +18,13 @@ export type UserDetails = {
   followers?: string[];
 };
 
+export type Comment = {
+  _id: string;
+  user: UserDetails;
+  text: string;
+  createdAt: string;
+};
+
 export interface TweetData {
   _id: string;
   user: UserDetails;
@@ -25,7 +32,7 @@ export interface TweetData {
   media?: string[];
   likes: string[];
   saved: string[];
-  comments: string[];
+  comments: Comment[];
   reposts: string[];
   createdAt: string;
 }
@@ -154,6 +161,8 @@ const tweetsSlice = createSlice({
       .addCase(
         fetchTweetById.fulfilled,
         (state, action: PayloadAction<TweetData>) => {
+          console.log(action.payload);
+
           state.tweet = action.payload;
         }
       )

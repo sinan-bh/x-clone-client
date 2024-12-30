@@ -7,12 +7,9 @@ import React, { useEffect } from "react";
 const NavBar: React.FC = () => {
   const dispatch = useAppDispatch();
   const { activeTab } = useAppSelector((state) => state.tweets);
-  // const [activeTab, setActiveTab] = useState<"forYou" | "following">("forYou");
 
   useEffect(() => {
     const status = JSON.parse(localStorage.getItem("status") || "forYou");
-    console.log(status);
-
     dispatch(setActiveTab(status));
   }, [activeTab, dispatch]);
 
