@@ -43,7 +43,7 @@ const SignIn = () => {
       const isExisting = users?.some((user) => user.email === userEmail);
       if (isExisting) {
         dispatch(authLogin(userEmail as string)).unwrap();
-        toast.success("Sign In Successful")
+        toast.success("Sign In Successful");
         router.push("/home");
       } else {
         localStorage.setItem(
@@ -93,6 +93,7 @@ const SignIn = () => {
     try {
       await dispatch(loginUser({ loginField: userLogin, password })).unwrap();
       localStorage.setItem("loginedUser", JSON.stringify(true));
+      localStorage.setItem("status", JSON.stringify("forYou"));
       toast.success("Sign In Successful");
       router.push(`/home`);
     } catch (err) {
@@ -122,7 +123,10 @@ const SignIn = () => {
             </div>
             <div className="w-full flex flex-col items-center">
               <div className="w-full max-w-xs md:w-2/4">
-                <div className="cursor-pointer bg-white border rounded-3xl text-nowrap py-2 text-black flex justify-center items-center" onClick={handleGoogleAuth}>
+                <div
+                  className="cursor-pointer bg-white border rounded-3xl text-nowrap py-2 text-black flex justify-center items-center"
+                  onClick={handleGoogleAuth}
+                >
                   <FcGoogle size={25} />
                   <span className="pl-2">Sign Up with Google</span>
                 </div>

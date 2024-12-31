@@ -16,6 +16,7 @@ export type UserDetails = {
   profilePicture?: string;
   following?: string[];
   followers?: string[];
+  createdAt?: string;
 };
 
 export type Comment = {
@@ -73,7 +74,7 @@ const tweetsSlice = createSlice({
   initialState,
   reducers: {
     setActiveTab: (state, action) => {
-      state.activeTab = action.payload;
+      state.activeTab = action.payload || "forYou";
     },
   },
   extraReducers: (builder) => {

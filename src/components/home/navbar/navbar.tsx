@@ -9,7 +9,8 @@ const NavBar: React.FC = () => {
   const { activeTab } = useAppSelector((state) => state.tweets);
 
   useEffect(() => {
-    const status = JSON.parse(localStorage.getItem("status") || "forYou");
+    const status =
+      JSON.parse(localStorage.getItem("status") || "forYou");
     dispatch(setActiveTab(status));
   }, [activeTab, dispatch]);
 

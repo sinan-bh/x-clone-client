@@ -15,6 +15,7 @@ import { useAppDispatch } from "@/lib/store/hook";
 import { TweetData } from "@/lib/store/features/tweets-slice";
 import { createComment } from "@/lib/store/thunks/tweet-thunk";
 import Image from "next/image";
+import { socket } from "@/components/chat/chat";
 
 type CommentProps = {
   tweet: TweetData | null;
@@ -35,7 +36,9 @@ const CommentBox: React.FC<CommentProps> = ({ tweet, loginedUser }) => {
     dispatch(
       createComment({ postId: tweet?._id as string, text: commentText })
     ).unwrap();
-    toast.success(`Comment submitted: ${commentText}`);
+
+    socket.emit("comment", { postId: tweet?._id });
+    toast.success(`Comment submitted successfully`);
     setCommentText("");
   };
 

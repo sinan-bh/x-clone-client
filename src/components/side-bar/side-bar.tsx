@@ -43,7 +43,6 @@ const Sidebar: React.FC = () => {
 
   return (
     <div>
-      {/* Sidebar for Desktop */}
       <div className="hidden md:flex flex-col py-4 justify-between max-w-60 items-end pr-5 border-r border-gray-600 h-screen">
         <Link href={"/home"} className="text-4xl font-bold pr-1">
           <FaXTwitter />
