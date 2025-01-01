@@ -3,13 +3,14 @@
 import React, { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hook";
 import {
-  fetchComments,
   fetchLikedTweets,
   fetchUserTweet,
 } from "@/lib/store/thunks/tweet-thunk";
 import { useParams } from "next/navigation";
 import Tweet from "@/components/home/tweets/tweet";
 import Comments from "./comments";
+import { fetchComments } from "@/lib/store/thunks/comments-thunk";
+import { CircularProgress } from "@mui/material";
 
 interface TabContentProps {
   activeTab: "tweets" | "replies" | "likes";
@@ -18,9 +19,10 @@ interface TabContentProps {
 
 const TabContent: React.FC<TabContentProps> = ({ activeTab, userId }) => {
   const { userName }: { userName: string } = useParams();
-  const { userTweet, userLikes, comments, loading, error } = useAppSelector(
+  const { userTweet, userLikes, loading, error } = useAppSelector(
     (state) => state.tweets
   );
+  const { comments, pendign, err } = useAppSelector((state) => state.comment);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -32,8 +34,13 @@ const TabContent: React.FC<TabContentProps> = ({ activeTab, userId }) => {
   }, [dispatch, userName, userId]);
 
   const renderContent = () => {
-    if (loading) return <div>Loading...</div>;
-    if (error) return <div className="text-red-500">{error}</div>;
+    if (loading || pendign)
+      return (
+        <div className="flex justify-center items-center max-h-full">
+          <CircularProgress size={60} />
+        </div>
+      );
+    if (error || err) return <div className="text-red-500">{error}</div>;
 
     switch (activeTab) {
       case "tweets":

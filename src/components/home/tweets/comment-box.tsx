@@ -13,9 +13,9 @@ import { Button } from "@/components/ui/button";
 import { FaComment } from "react-icons/fa";
 import { useAppDispatch } from "@/lib/store/hook";
 import { TweetData } from "@/lib/store/features/tweets-slice";
-import { createComment } from "@/lib/store/thunks/tweet-thunk";
+import { createComment } from "@/lib/store/thunks/comments-thunk";
 import Image from "next/image";
-import { socket } from "@/components/chat/chat";
+import { socket } from "@/components/chat/chat-list";
 
 type CommentProps = {
   tweet: TweetData | null;

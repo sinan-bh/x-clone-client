@@ -1,6 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import {
-  fetchComments,
   fetchFollowingUserPost,
   fetchLikedTweets,
   fetchTweetById,
@@ -124,22 +123,6 @@ const tweetsSlice = createSlice({
       )
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .addCase(fetchUserTweet.rejected, (state, action: any) => {
-        state.loading = false;
-        state.error = action.payload;
-      })
-      .addCase(fetchComments.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(
-        fetchComments.fulfilled,
-        (state, action: PayloadAction<CommentData[]>) => {
-          state.loading = false;
-          state.comments = action.payload;
-        }
-      )
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      .addCase(fetchComments.rejected, (state, action: any) => {
         state.loading = false;
         state.error = action.payload;
       })

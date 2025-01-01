@@ -4,18 +4,16 @@ import React, { useState, useEffect, useRef } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import Picker, { Theme } from "emoji-picker-react";
-import io from "socket.io-client";
 import Cookies from "js-cookie";
 import { LoginedUser } from "../home/tweets/tweet";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hook";
 import { fetchUserData } from "@/lib/store/thunks/user-thunk";
-import { fetchChatMessages } from "@/lib/store/thunks/chat-thunk";
 import { addMessage, setMessages } from "@/lib/store/features/chat-slice";
 import Image from "next/image";
-
-export  const socket = io(process.env.NEXT_PUBLIC_SERVER_URL);
+import { socket } from "./chat-list";
+import { CircularProgress } from "@mui/material";
 
 export interface Message {
   content: string;
@@ -26,43 +24,42 @@ export interface Message {
 const Inbox: React.FC = () => {
   const [showPicker, setShowPicker] = useState(false);
   const { userDetails } = useAppSelector((state) => state.user);
-  const { messages } = useAppSelector((state) => state.chat);
+  const { messages, loading } = useAppSelector((state) => state.chat);
   const [loginedUser, setLoginedUser] = useState<LoginedUser | null>(null);
   const { chatId, userId }: { chatId: string; userId: string } = useParams();
   const emojiPickerRef = useRef<HTMLDivElement>(null);
-  const messagesEndRef = useRef<HTMLDivElement>(null); // Ref for scrolling
+  const messagesEndRef = useRef<HTMLDivElement>(null);
   const dispatch = useAppDispatch();
+  const router = useRouter();
 
-  // Scroll to bottom function
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   useEffect(() => {
     if (chatId && userId) {
+      router.refresh();
       console.log(chatId);
-      dispatch(fetchChatMessages(chatId));
       dispatch(fetchUserData(userId));
 
       socket.emit("joinRoom", { chatId });
 
       socket.on("previousMessages", (msgs: Message[]) => {
         dispatch(setMessages(msgs));
-        scrollToBottom(); // Scroll down when loading previous messages
+        scrollToBottom();
       });
 
       socket.on("receiveMessage", (message: Message) => {
         dispatch(addMessage(message));
-        scrollToBottom(); // Scroll down when receiving a new message
+        scrollToBottom();
       });
 
       return () => {
         socket.off("receiveMessage");
         socket.off("previousMessages");
-        socket.disconnect();
       };
     }
-  }, [chatId, dispatch, userId]);
+  }, [chatId, dispatch, router, userId]);
 
   useEffect(() => {
     const currentUser = Cookies.get("user");
@@ -103,6 +100,7 @@ const Inbox: React.FC = () => {
         sender: loginedUser?.id,
         content: values.message,
       };
+      console.log(messageData);
       socket.emit("sendMessage", messageData);
       formik.resetForm();
     },
@@ -112,10 +110,17 @@ const Inbox: React.FC = () => {
     formik.setFieldValue("message", formik.values.message + emojiObject.emoji);
   };
 
-  // Scroll to bottom when messages change
   useEffect(() => {
     scrollToBottom();
-  }, [messages]); // Trigger scroll when messages are updated
+  }, [messages]);
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen z-40">
+        <CircularProgress size={60} />
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col h-screen border-l border-gray-600">
@@ -134,12 +139,14 @@ const Inbox: React.FC = () => {
               )}
             </div>
             <div>
-              <div className="font-bold text-xl">{userDetails?.name}</div>
+              <div className="font-bold text-xl">
+                {userDetails?.name ? userDetails.name : "Messages"}
+              </div>
               <Link
                 href={`/${userDetails?.userName}`}
                 className="text-gray-500 cursor-pointer hover:underline"
               >
-                @{userDetails?.userName}
+                {userDetails?.userName ? "@" + userDetails.userName : ""}
               </Link>
             </div>
           </div>

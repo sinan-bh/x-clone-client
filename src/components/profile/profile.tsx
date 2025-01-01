@@ -17,6 +17,8 @@ import TabContent from "./tweets/tab-tweets";
 import SearchSection from "../home/search-section/search-section";
 import { Button } from "../ui/button";
 import { fetchLikedTweets } from "@/lib/store/thunks/tweet-thunk";
+import { CircularProgress } from "@mui/material";
+
 
 const ProfilePage: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -66,7 +68,7 @@ const ProfilePage: React.FC = () => {
   if (!userDetails) {
     return (
       <div className="min-h-screen flex items-center justify-center text-white">
-        Loading...
+        <CircularProgress size={60} />
       </div>
     );
   }
@@ -177,10 +179,7 @@ const ProfilePage: React.FC = () => {
               </Link>
             ))}
           </div>
-          {/* <div className="border-b border-gray-600"> */}
           <TabContent activeTab={activeTab} userId={userDetails._id} />
-          {/* </div */}
-
           {showModal && (
             <EditProfileModal user={userDetails} onClose={handleCloseModal} />
           )}

@@ -11,11 +11,14 @@ import Cookies from "js-cookie";
 import { LoginedUser } from "../home/tweets/tweet";
 import { useRouter } from "next/navigation";
 import axiosInstance from "@/utils/axios";
+import io from "socket.io-client";
+
+export const socket = io(process.env.NEXT_PUBLIC_SERVER_URL);
 
 export default function ChatList() {
-  const dispatch = useAppDispatch();
   const { participants, users } = useAppSelector((state) => state.chat);
   const [loginedUser, setLoginedUser] = useState<LoginedUser | null>(null);
+    const dispatch = useAppDispatch();
   const router = useRouter();
 
   useEffect(() => {
@@ -50,6 +53,7 @@ export default function ChatList() {
         const { data } = await axiosInstance.get(`/chats/${user1}/${user2}`);
         const chatId = data?.data?.chatId;
         if (chatId) {
+          socket.emit("joinRoom", { chatId });
           router.push(`/messages/${chatId}/${userName}`);
         }
       } else {
@@ -59,6 +63,7 @@ export default function ChatList() {
         });
         const chatId = data?.data?.chatId;
         if (chatId) {
+          socket.emit("joinRoom", { chatId });
           router.push(`/messages/${chatId}/${userName}`);
         }
       }

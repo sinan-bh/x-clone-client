@@ -20,7 +20,7 @@ import { useAppDispatch, useAppSelector } from "@/lib/store/hook";
 import Cookies from "js-cookie";
 import { Comment, UserDetails } from "@/lib/store/features/tweets-slice";
 import CommentBox from "./comment-box";
-import { socket } from "@/components/chat/chat";
+import { socket } from "@/components/chat/chat-list";
 
 export interface TweetProps {
   _id?: string;
