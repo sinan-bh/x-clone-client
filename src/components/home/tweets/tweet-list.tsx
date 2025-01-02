@@ -11,7 +11,7 @@ import { CircularProgress } from "@mui/material";
 
 const TweetList: React.FC = () => {
   const dispatch = useAppDispatch();
-  const { tweets, followingTweets, activeTab, loading } = useAppSelector(
+  const { tweets, followingTweets, activeTab, loading , error} = useAppSelector(
     (state) => state.tweets
   );
 
@@ -27,6 +27,10 @@ const TweetList: React.FC = () => {
   }, [activeTab, dispatch]);
 
   const posts = isStatus === "forYou" ? tweets : followingTweets;
+
+  if (error) {
+    return(<div>{error}</div>)
+  }
 
   return (
     <div className="bg-black min-h-screen text-white">

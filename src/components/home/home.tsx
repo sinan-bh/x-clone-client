@@ -5,7 +5,8 @@ import TweetList from "@/components/home/tweets/tweet-list";
 import PostInput from "./tweets/create-tweet";
 
 export default function home() {
-  return (
+
+ return (
     <div className="w-screen h-screen flex">
       <div className="w-full sm:w-1/2 border-r border-gray-600 sticky">
         <NavBar />

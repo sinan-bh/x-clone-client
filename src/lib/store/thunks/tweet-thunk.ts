@@ -81,8 +81,9 @@ export const savedPost = createAsyncThunk(
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
+      console.log(error.response);
       return rejectWithValue(
-        error.response?.data?.message || "Failed to fetch tweets"
+        error.response?.data || "Failed to fetch tweets"
       );
     }
   }
@@ -137,8 +138,6 @@ export const fetchTweetById = createAsyncThunk(
     }
   }
 );
-
-
 
 // export const fetchTweetById = createAsyncThunk(
 //   "tweets/fetchComments",

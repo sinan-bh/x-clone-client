@@ -48,7 +48,7 @@ export default function FollowStatusUser({
   };
 
   if (status === "loading") {
-    return <div className="flex justify-center items-center h-[90vh]"><CircularProgress size={60} /></div>;
+    return <div className="flex justify-center items-center h-[90vh]  "><CircularProgress size={60} /></div>;
   }
 
   return (
