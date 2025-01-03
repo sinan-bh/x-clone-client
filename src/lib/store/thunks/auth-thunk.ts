@@ -68,6 +68,7 @@ export const loginUser = createAsyncThunk(
       const response = await Instance.post(`/auth/login`, credentials);
       const { data } = response;
       const userData = data.data;
+      console.log(userData);
 
       Cookies.set(
         "user",
@@ -96,7 +97,7 @@ export const authLogin = createAsyncThunk(
     try {
       const response = await Instance.post(`/auth/google-auth`, { email });
       const { data } = response;
-      const userData = data.data;      
+      const userData = data.data;
 
       Cookies.set(
         "user",
@@ -108,7 +109,7 @@ export const authLogin = createAsyncThunk(
           token: userData.token,
           id: userData.user.id,
         }),
-        { expires: new Date(Date.now() + 1 * 60 * 1000) }
+        { expires: new Date(Date.now() + 1 * 60 * 60 * 1000) }
       );
       return data;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
