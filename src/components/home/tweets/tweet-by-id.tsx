@@ -3,16 +3,18 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hook";
-import { createComment, fetchTweetById } from "@/lib/store/thunks/tweet-thunk";
+import { fetchTweetById } from "@/lib/store/thunks/tweet-thunk";
 import Tweet, { LoginedUser } from "./tweet";
 import Image from "next/image";
 import Cookies from "js-cookie";
 import { toast } from "react-toastify";
 import SearchSection from "../search-section/search-section";
+import { createComment } from "@/lib/store/thunks/comments-thunk";
+import { CircularProgress } from "@mui/material";
 
 export default function TweetById() {
   const { tweetId }: { tweetId: string } = useParams();
-  const { tweet } = useAppSelector((state) => state.tweets);
+  const { tweet, loading } = useAppSelector((state) => state.tweets);
   const [loginedUser, setLoginedUser] = useState<LoginedUser>();
   const [commentText, setCommentText] = useState<string>("");
   const [isText, setIsText] = useState<boolean>(false);
@@ -35,6 +37,10 @@ export default function TweetById() {
     setIsText(false);
     toast.success("commented successfully");
   };
+
+  if (loading) {
+    return <CircularProgress size={60} />;
+  }
 
   return (
     <div className="w-screen h-screen flex">

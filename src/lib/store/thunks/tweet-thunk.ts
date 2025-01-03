@@ -81,8 +81,9 @@ export const savedPost = createAsyncThunk(
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
+      console.log(error.response);
       return rejectWithValue(
-        error.response?.data?.message || "Failed to fetch tweets"
+        error.response?.data || "Failed to fetch tweets"
       );
     }
   }
@@ -126,44 +127,6 @@ export const fetchTweetById = createAsyncThunk(
     try {
       const response = await axiosInstance.get(`/tweets/${postId}`);
       console.log(response.data.data, "tweee");
-
-      return response.data.data;
-
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
-      return rejectWithValue(
-        error.response?.data?.message || "Failed to fetch tweets"
-      );
-    }
-  }
-);
-
-export const createComment = createAsyncThunk(
-  "tweets/createComment",
-  async (
-    { postId, text }: { postId: string; text: string },
-    { rejectWithValue }
-  ) => {
-    try {
-      const response = await axiosInstance.post(`/tweets/comment/${postId}`, {
-        text,
-      });
-      return response.data.data;
-
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
-      return rejectWithValue(
-        error.response?.data?.message || "Failed to fetch tweets"
-      );
-    }
-  }
-);
-
-export const fetchComments = createAsyncThunk(
-  "tweets/fetchComments",
-  async (_, { rejectWithValue }) => {
-    try {
-      const response = await axiosInstance.get(`/tweets/comment`);
 
       return response.data.data;
 

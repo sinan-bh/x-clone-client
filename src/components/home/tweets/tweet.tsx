@@ -20,6 +20,7 @@ import { useAppDispatch, useAppSelector } from "@/lib/store/hook";
 import Cookies from "js-cookie";
 import { Comment, UserDetails } from "@/lib/store/features/tweets-slice";
 import CommentBox from "./comment-box";
+import { socket } from "@/components/chat/chat-list";
 
 export interface TweetProps {
   _id?: string;
@@ -34,6 +35,7 @@ export interface TweetProps {
 }
 
 export type LoginedUser = {
+  id?: string | undefined;
   profilePicture: string;
 };
 
@@ -55,6 +57,7 @@ const Tweet: React.FC<TweetProps> = ({
   const dispatch = useAppDispatch();
   const { tweet } = useAppSelector((state) => state.tweets);
   const [loginedUser, setLoginedUser] = useState<LoginedUser>();
+  const [commentCount, setCommentCount] = useState(comments?.length);
 
   useEffect(() => {
     const currentUser = Cookies.get("user");
@@ -65,7 +68,20 @@ const Tweet: React.FC<TweetProps> = ({
 
     const isSaved = saved?.includes(user.id);
     setSave(isSaved ? true : false);
-  }, [likes, saved]);
+
+    socket.on("updatedLikes", ({ updatedLikes, postId }) => {
+      if (_id === postId) {
+        setLikesCount(updatedLikes);
+      }
+    });
+
+    socket.on("updatedComments", ({ postId, updatedComment }) => {
+      console.log(updatedComment, "uuu");
+      if (postId === _id) {
+        setCommentCount(updatedComment);
+      }
+    });
+  }, [_id, likes, saved]);
 
   const handleLike = async (postId: string) => {
     try {
@@ -75,6 +91,7 @@ const Tweet: React.FC<TweetProps> = ({
       const isLikedNow = response.post.likes.includes(user.id);
       setLiked(isLikedNow);
 
+      socket.emit("likes", { postId });
       setLikesCount(response.post.likes.length);
     } catch (error) {
       console.error("Error liking post:", error);
@@ -179,7 +196,7 @@ const Tweet: React.FC<TweetProps> = ({
                 loginedUser={loginedUser || { profilePicture: "" }}
               />
             </div>
-            <span>{comments?.length}</span>
+            <span>{commentCount}</span>
           </div>
           <button
             onClick={handleRepost}

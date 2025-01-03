@@ -17,6 +17,8 @@ import TabContent from "./tweets/tab-tweets";
 import SearchSection from "../home/search-section/search-section";
 import { Button } from "../ui/button";
 import { fetchLikedTweets } from "@/lib/store/thunks/tweet-thunk";
+import { CircularProgress } from "@mui/material";
+import { socket } from "../chat/chat-list";
 
 const ProfilePage: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -25,6 +27,7 @@ const ProfilePage: React.FC = () => {
     (state) => state.user
   );
 
+  const [followCount, setFollowCount] = useState<number | null>(null);
   const [showModal, setShowModal] = useState(false);
   const { userName } = useParams<{ userName: string }>();
 
@@ -45,7 +48,23 @@ const ProfilePage: React.FC = () => {
       const isFollowing = userDetails?.followers?.some(
         (follower) => follower.userName === user.userName
       );
+      socket.emit("joinProfile", { userName, likedUserId: user.id });
       dispatch(setFollowStatus(isFollowing ? "following" : "follow"));
+
+      socket.on("previousFollowComment", ({ isFollow }) => {
+        setFollowCount(
+          isFollow ? userDetails.followers.length : userDetails.followers.length
+        );
+        dispatch(setFollowStatus(isFollow ? "following" : "follow"));
+      });
+
+
+      socket.on("updatedFollowCount", ({ isFollow }) => {
+        setFollowCount(
+          isFollow ? userDetails.followers.length : userDetails.followers.length
+        );
+        dispatch(setFollowStatus(isFollow ? "following" : "follow"));
+      });
     }
   }, [userDetails, dispatch]);
 
@@ -57,6 +76,10 @@ const ProfilePage: React.FC = () => {
     if (currentUser) {
       const user = JSON.parse(currentUser);
       await dispatch(toggleFollow({ userId: user.id, followedUserId }));
+      socket.emit("followCount", {
+        userId: followedUserId,
+        likedUserId: user.id,
+      });
       dispatch(
         setFollowStatus(followStatus === "follow" ? "following" : "follow")
       );
@@ -66,7 +89,7 @@ const ProfilePage: React.FC = () => {
   if (!userDetails) {
     return (
       <div className="min-h-screen flex items-center justify-center text-white">
-        Loading...
+        <CircularProgress size={60} />
       </div>
     );
   }
@@ -148,7 +171,7 @@ const ProfilePage: React.FC = () => {
               </Link>
               <Link href={`/${userName}/followers`} className="hover:underline">
                 <span className="font-bold">
-                  {userDetails.followers?.length}
+                  {followCount || userDetails.followers?.length}
                 </span>{" "}
                 <span className="text-gray-500">Followers</span>
               </Link>
@@ -177,10 +200,7 @@ const ProfilePage: React.FC = () => {
               </Link>
             ))}
           </div>
-          {/* <div className="border-b border-gray-600"> */}
           <TabContent activeTab={activeTab} userId={userDetails._id} />
-          {/* </div */}
-
           {showModal && (
             <EditProfileModal user={userDetails} onClose={handleCloseModal} />
           )}

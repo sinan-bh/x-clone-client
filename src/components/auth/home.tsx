@@ -20,12 +20,17 @@ export default function Home() {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const { users } = useAppSelector((state) => state.user);
+  const { token } = useAppSelector((state) => state.auth);
 
   useEffect(() => {
     if (session?.user) {
       dispatch(fetchAllUsers()).unwrap();
     }
-  }, [session?.user, dispatch]);
+
+    if (!token) {
+      router.push("/");
+    }
+  }, [session?.user, dispatch, token, router]);
 
   useEffect(() => {
     if (session?.user) {

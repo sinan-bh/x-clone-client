@@ -1,4 +1,4 @@
-import Sidebar from "@/components/side-bar/side-bar";
+import ChatList from "@/components/chat/chat-list";
 import React from "react";
 
 export default function Layout({
@@ -8,8 +8,8 @@ export default function Layout({
 }>) {
   return (
     <div className="flex h-screen text-white">
-      <div className="w-0 sm:w-1/6 z-50">
-        <Sidebar />
+      <div className="w-2/6">
+        <ChatList />
       </div>
       <div className="flex-1 overflow-hidden">{children}</div>
     </div>

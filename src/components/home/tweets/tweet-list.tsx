@@ -7,10 +7,11 @@ import {
   fetchFollowingUserPost,
   fetchTweets,
 } from "@/lib/store/thunks/tweet-thunk";
+import { CircularProgress } from "@mui/material";
 
 const TweetList: React.FC = () => {
   const dispatch = useAppDispatch();
-  const { tweets, followingTweets, activeTab, loading } = useAppSelector(
+  const { tweets, followingTweets, activeTab, loading , error} = useAppSelector(
     (state) => state.tweets
   );
 
@@ -27,10 +28,16 @@ const TweetList: React.FC = () => {
 
   const posts = isStatus === "forYou" ? tweets : followingTweets;
 
+  if (error) {
+    return(<div>{error}</div>)
+  }
+
   return (
     <div className="bg-black min-h-screen text-white">
       {loading ? (
-        <div className="text-center text-gray-400">Loading tweets...</div>
+        <div className="flex justify-center items-center h-[70vh] text-gray-400 ">
+          <CircularProgress size={60} />
+        </div>
       ) : (
         posts?.map((tweet, index) => <Tweet key={index} {...tweet} />)
       )}
