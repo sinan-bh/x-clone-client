@@ -66,7 +66,7 @@ const ProfilePage: React.FC = () => {
         dispatch(setFollowStatus(isFollow ? "following" : "follow"));
       });
     }
-  }, [userDetails, dispatch]);
+  }, [userDetails, dispatch, userName]);
 
   const handleEditProfile = () => setShowModal(true);
   const handleCloseModal = () => setShowModal(false);
