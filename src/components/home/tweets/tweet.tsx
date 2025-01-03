@@ -1,54 +1,110 @@
 "use client";
 
 import Image from "next/image";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   FaHeart,
   FaRegHeart,
-  FaComment,
   FaRetweet,
   FaBookmark,
   FaRegBookmark,
 } from "react-icons/fa";
 import { formatDistanceToNow, parseISO } from "date-fns";
 import Link from "next/link";
-import { UserDetails } from "@/lib/store/features/tweets-slice";
+import {
+  fetchTweetById,
+  likedPost,
+  savedPost,
+} from "@/lib/store/thunks/tweet-thunk";
+import { useAppDispatch, useAppSelector } from "@/lib/store/hook";
+import Cookies from "js-cookie";
+import { Comment, UserDetails } from "@/lib/store/features/tweets-slice";
+import CommentBox from "./comment-box";
+import { socket } from "@/components/chat/chat-list";
 
-interface TweetProps {
-  user: UserDetails;
-  text: string;
+export interface TweetProps {
+  _id?: string;
+  user?: UserDetails;
+  text?: string;
   media?: string[];
-  likes: string[];
-  comments: string[];
-  reposts: string[];
-  createdAt: string;
+  likes?: string[];
+  saved?: string[];
+  comments?: Comment[];
+  reposts?: string[];
+  createdAt?: string;
 }
 
+export type LoginedUser = {
+  id?: string | undefined;
+  profilePicture: string;
+};
+
 const Tweet: React.FC<TweetProps> = ({
+  _id,
   user,
   text,
   media,
   likes,
+  saved,
   comments,
   reposts,
   createdAt,
 }) => {
   const [liked, setLiked] = useState(false);
-  const [saved, setSaved] = useState(false);
-  const [likesCount, setLikesCount] = useState(likes.length);
-  const [repost, setRepost] = useState(reposts.length);
+  const [save, setSave] = useState(false);
+  const [likesCount, setLikesCount] = useState(likes?.length);
+  const [repost, setRepost] = useState(reposts?.length);
+  const dispatch = useAppDispatch();
+  const { tweet } = useAppSelector((state) => state.tweets);
+  const [loginedUser, setLoginedUser] = useState<LoginedUser>();
+  const [commentCount, setCommentCount] = useState(comments?.length);
 
-  const handleLike = () => {
-    setLiked(!liked);
-    setLikesCount(liked ? likesCount - 1 : likesCount + 1);
+  useEffect(() => {
+    const currentUser = Cookies.get("user");
+    const user = JSON.parse(currentUser || "{}");
+    const isLiked = likes?.includes(user.id) ? true : false;
+    setLoginedUser(user);
+    setLiked(isLiked ? true : false);
+
+    const isSaved = saved?.includes(user.id);
+    setSave(isSaved ? true : false);
+
+    socket.on("updatedLikes", ({ updatedLikes, postId }) => {
+      if (_id === postId) {
+        setLikesCount(updatedLikes);
+      }
+    });
+
+    socket.on("updatedComments", ({ postId, updatedComment }) => {
+      console.log(updatedComment, "uuu");
+      if (postId === _id) {
+        setCommentCount(updatedComment);
+      }
+    });
+  }, [_id, likes, saved]);
+
+  const handleLike = async (postId: string) => {
+    try {
+      const response = await dispatch(likedPost(postId)).unwrap();
+      const currentUser = Cookies.get("user");
+      const user = JSON.parse(currentUser || "{}");
+      const isLikedNow = response.post.likes.includes(user.id);
+      setLiked(isLikedNow);
+
+      socket.emit("likes", { postId });
+      setLikesCount(response.post.likes.length);
+    } catch (error) {
+      console.error("Error liking post:", error);
+    }
   };
 
   const handleRepost = () => {
-    setRepost(repost + 1);
+    setRepost(repost && repost + 1);
   };
 
-  const handleSave = () => {
-    setSaved(!saved);
+  const handleSave = async (postId: string) => {
+    await dispatch(savedPost(postId));
+    setSave(!save);
   };
 
   const getTimeAgo = (time: string) => {
@@ -65,6 +121,10 @@ const Tweet: React.FC<TweetProps> = ({
     }
 
     return timeAgo;
+  };
+
+  const handleCommand = (tweetId: string) => {
+    dispatch(fetchTweetById(tweetId));
   };
 
   return (
@@ -97,43 +157,47 @@ const Tweet: React.FC<TweetProps> = ({
               @{user?.userName}
             </Link>
           </div>
-          <p className="text-xs text-gray-500">{getTimeAgo(createdAt)}</p>
+          <p className="text-xs text-gray-500">
+            {createdAt && getTimeAgo(createdAt)}
+          </p>
         </div>
-        <p className="mt-2 text-sm">{text}</p>
-        {media && (
-          <div
-            className={`mt-4 ${
-              media.length > 1 ? "grid grid-cols-2 gap-2 sm:grid-cols-3" : ""
-            }`}
-          >
-            {media.map((m, i) => (
-              <div key={i} className={`${media.length > 1 ? "" : "w-full"}`}>
-                <Image
-                  src={m || ""}
-                  alt="Media"
-                  width={media.length > 1 ? 200 : 500}
-                  height={media.length > 1 ? 200 : 300}
-                  className={`rounded-lg ${
-                    media.length > 1 ? " object-cover  w-full" : "h-auto w-full"
-                  }`}
-                />
-              </div>
-            ))}
-          </div>
-        )}
+        <Link href={`/${user?.userName}/status/${_id}`}>
+          <p className="mt-2 text-sm">{text}</p>
+          {media && (
+            <div
+              className={`mt-4 max-w-full ${
+                media.length > 1 ? "grid grid-cols-2 gap-2 sm:grid-cols-3" : ""
+              }`}
+            >
+              {media.map((m, i) => (
+                <div key={i} className={`${media.length > 1 ? "" : "w-full"}`}>
+                  <Image
+                    src={m || ""}
+                    alt="Media"
+                    width={media.length > 1 ? 200 : 500}
+                    height={media.length > 1 ? 200 : 300}
+                    className={`rounded-lg ${
+                      media.length > 1
+                        ? " object-cover  w-full"
+                        : "h-auto w-full"
+                    }`}
+                  />
+                </div>
+              ))}
+            </div>
+          )}
+        </Link>
 
         <div className="flex justify-around mt-4 text-gray-400">
-          <button
-            onClick={handleLike}
-            className="flex items-center space-x-1 hover:text-red-500"
-          >
-            {liked ? <FaHeart className="text-red-500" /> : <FaRegHeart />}
-            <span>{likesCount}</span>
-          </button>
-          <button className="flex items-center space-x-1 hover:text-blue-500">
-            <FaComment />
-            <span>{comments.length}</span>
-          </button>
+          <div className="flex justify-center items-center">
+            <div onClick={() => handleCommand(_id || "")}>
+              <CommentBox
+                tweet={tweet}
+                loginedUser={loginedUser || { profilePicture: "" }}
+              />
+            </div>
+            <span>{commentCount}</span>
+          </div>
           <button
             onClick={handleRepost}
             className="flex items-center space-x-1 hover:text-green-500"
@@ -142,15 +206,22 @@ const Tweet: React.FC<TweetProps> = ({
             <span>{reposts}</span>
           </button>
           <button
-            onClick={handleSave}
+            onClick={() => handleLike(_id || "")}
+            className="flex items-center space-x-1 hover:text-red-500"
+          >
+            {liked ? <FaHeart className="text-red-500" /> : <FaRegHeart />}
+            <span>{likesCount}</span>
+          </button>
+
+          <button
+            onClick={() => handleSave(_id || "")}
             className="flex items-center space-x-1 hover:text-yellow-500"
           >
-            {saved ? (
+            {save ? (
               <FaBookmark className="text-yellow-500" />
             ) : (
               <FaRegBookmark />
             )}
-            <span>{saved ? "Saved" : "Save"}</span>
           </button>
         </div>
       </div>

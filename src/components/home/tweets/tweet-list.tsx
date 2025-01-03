@@ -1,24 +1,45 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Tweet from "@/components/home/tweets/tweet";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hook";
-import { fetchTweets } from "@/lib/store/features/tweets-slice";
+import {
+  fetchFollowingUserPost,
+  fetchTweets,
+} from "@/lib/store/thunks/tweet-thunk";
+import { CircularProgress } from "@mui/material";
 
 const TweetList: React.FC = () => {
   const dispatch = useAppDispatch();
-  const { tweets, loading } = useAppSelector((state) => state.tweets);
+  const { tweets, followingTweets, activeTab, loading , error} = useAppSelector(
+    (state) => state.tweets
+  );
+
+  const [isStatus, setIsStatus] = useState("");
+  useEffect(() => {
+    const status = JSON.parse(localStorage.getItem("status") || "forYou");
+    setIsStatus(status);
+  }, [activeTab]);
 
   useEffect(() => {
     dispatch(fetchTweets());
-  }, [dispatch]);
+    dispatch(fetchFollowingUserPost());
+  }, [activeTab, dispatch]);
+
+  const posts = isStatus === "forYou" ? tweets : followingTweets;
+
+  if (error) {
+    return(<div>{error}</div>)
+  }
 
   return (
     <div className="bg-black min-h-screen text-white">
       {loading ? (
-        <div className="text-center text-gray-400">Loading tweets...</div>
+        <div className="flex justify-center items-center h-[70vh] text-gray-400 ">
+          <CircularProgress size={60} />
+        </div>
       ) : (
-        tweets?.map((tweet, index) => <Tweet key={index} {...tweet} />)
+        posts?.map((tweet, index) => <Tweet key={index} {...tweet} />)
       )}
     </div>
   );

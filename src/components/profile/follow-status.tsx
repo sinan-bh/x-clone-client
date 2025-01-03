@@ -2,14 +2,16 @@
 
 import {
   fetchFollowersOrFollowing,
-  setFollowStatus,
   toggleFollow,
-} from "@/lib/store/features/user-slice";
+} from "@/lib/store/thunks/user-thunk";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hook";
 import Link from "next/link";
+import { setFollowStatus } from "@/lib/store/features/user-slice";
+import { CircularProgress } from "@mui/material";
+import { socket } from "../chat/chat-list";
 
 type FollowStatusUserProps = {
   userName: string;
@@ -44,10 +46,16 @@ export default function FollowStatusUser({
 
     await dispatch(toggleFollow({ userId: user.id, followedUserId: id }));
     await dispatch(fetchFollowersOrFollowing({ userName, followStatus }));
+
+    socket.emit("followCount", { userId: user.id });
   };
 
   if (status === "loading") {
-    return <div>loading....</div>;
+    return (
+      <div className="flex justify-center items-center h-[90vh]  ">
+        <CircularProgress size={60} />
+      </div>
+    );
   }
 
   return (

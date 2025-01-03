@@ -1,6 +1,11 @@
-import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import axios from "axios";
-import Cookies from "js-cookie";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import {
+  fetchFollowingUserPost,
+  fetchLikedTweets,
+  fetchTweetById,
+  fetchTweets,
+  fetchUserTweet,
+} from "../thunks/tweet-thunk";
 
 export type UserDetails = {
   _id: string;
@@ -8,116 +13,69 @@ export type UserDetails = {
   userName: string;
   email?: string;
   profilePicture?: string;
+  following?: string[];
+  followers?: string[];
+  createdAt?: string;
+};
+
+export type Comment = {
+  _id: string;
+  user: UserDetails;
+  text: string;
+  createdAt: string;
 };
 
 export interface TweetData {
+  _id: string;
   user: UserDetails;
   text: string;
   media?: string[];
   likes: string[];
-  comments: string[];
+  saved: string[];
+  comments: Comment[];
   reposts: string[];
   createdAt: string;
 }
 
+export interface CommentData {
+  _id: string;
+  user: UserDetails;
+  tweet: TweetData[];
+  text: string;
+}
+
 interface TweetsState {
   tweets: TweetData[];
+  tweet: TweetData | null;
+  followingTweets: TweetData[];
   userTweet: TweetData[] | null;
+  userLikes: TweetData[] | null;
+  activeTab: "forYou" | "following";
+  comments: CommentData[] | null;
   loading: boolean;
   error: string | null;
 }
 
 const initialState: TweetsState = {
   tweets: [],
+  tweet: null,
+  followingTweets: [],
+  userLikes: [],
+  activeTab: "forYou",
+  comments: [],
   userTweet: null,
   loading: false,
   error: null,
 };
 
-// create Tweet
-export const createTweet = createAsyncThunk(
-  "tweets/creatTweet",
-  async (formData: FormData, { rejectWithValue }) => {
-    try {
-      const currentUser = Cookies.get("user");
-      const user = JSON.parse(currentUser || "{}");
-      const response = await axios.post(
-        "http://localhost:3001/api/tweets",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${user?.token}`,
-          },
-          withCredentials: true,
-        }
-      );
-      return response.data.data;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
-      return rejectWithValue(
-        error.response?.data?.message || "Failed to create tweet"
-      );
-    }
-  }
-);
-
-// Fetch Tweets
-export const fetchTweets = createAsyncThunk<TweetData[]>(
-  "tweets/fetchTweets",
-  async (_, { rejectWithValue }) => {
-    try {
-      const currentUser = Cookies.get("user");
-      const user = JSON.parse(currentUser || "{}");
-      const response = await axios.get("http://localhost:3001/api/tweets", {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${user?.token}`,
-        },
-        withCredentials: true,
-      });
-      return response.data.data;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
-      return rejectWithValue(
-        error.response?.data?.message || "Failed to fetch tweets"
-      );
-    }
-  }
-);
-
-// Fetch User Tweets
-export const fetchUserTweet = createAsyncThunk<TweetData[], string>(
-  "tweets/fetchUserTweet",
-  async (userId: string, { rejectWithValue }) => {
-    try {
-      const currentUser = Cookies.get("user");
-      const user = JSON.parse(currentUser || "{}");
-      const response = await axios.get(
-        `http://localhost:3001/api/tweets/${userId}`,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${user?.token}`,
-          },
-          withCredentials: true,
-        }
-      );
-      return response.data.data;
-
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
-      return rejectWithValue(
-        error.response?.data?.message || "Failed to fetch tweets"
-      );
-    }
-  }
-);
-
 const tweetsSlice = createSlice({
   name: "tweets",
   initialState,
-  reducers: {},
+  reducers: {
+    setActiveTab: (state, action) => {
+      state.activeTab = action.payload || "forYou";
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchTweets.pending, (state) => {
@@ -136,6 +94,22 @@ const tweetsSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
+      .addCase(fetchFollowingUserPost.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(
+        fetchFollowingUserPost.fulfilled,
+        (state, action: PayloadAction<TweetData[]>) => {
+          state.loading = false;
+          state.followingTweets = action.payload;
+        }
+      )
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      .addCase(fetchFollowingUserPost.rejected, (state, action: any) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
       .addCase(fetchUserTweet.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -151,8 +125,39 @@ const tweetsSlice = createSlice({
       .addCase(fetchUserTweet.rejected, (state, action: any) => {
         state.loading = false;
         state.error = action.payload;
+      })
+      .addCase(fetchLikedTweets.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(
+        fetchLikedTweets.fulfilled,
+        (state, action: PayloadAction<TweetData[]>) => {
+          state.loading = false;
+          state.userLikes = action.payload;
+        }
+      )
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      .addCase(fetchLikedTweets.rejected, (state, action: any) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(
+        fetchTweetById.fulfilled,
+        (state, action: PayloadAction<TweetData>) => {
+          console.log(action.payload);
+
+          state.tweet = action.payload;
+        }
+      )
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      .addCase(fetchTweetById.rejected, (state, action: any) => {
+        state.loading = false;
+        state.error = action.payload;
       });
   },
 });
+
+export const { setActiveTab } = tweetsSlice.actions;
 
 export default tweetsSlice.reducer;

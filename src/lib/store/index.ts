@@ -2,6 +2,8 @@ import { configureStore } from "@reduxjs/toolkit";
 import authReducer from "@/lib/store/features/auth-slice";
 import userReducer from "@/lib/store/features/user-slice";
 import tweetsReducer from "@/lib/store/features/tweets-slice";
+import chatReducer from "@/lib/store/features/chat-slice";
+import commentsReducer from "@/lib/store/features/comments-slice";
 
 export const makeStore = () => {
   return configureStore({
@@ -9,6 +11,8 @@ export const makeStore = () => {
       auth: authReducer,
       user: userReducer,
       tweets: tweetsReducer,
+      chat: chatReducer,
+      comment: commentsReducer,
     },
   });
 };

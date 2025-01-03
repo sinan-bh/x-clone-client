@@ -1,7 +1,7 @@
 "use client";
 
-import { authLogin } from "@/lib/store/features/auth-slice";
-import { fetchAllUsers } from "@/lib/store/features/user-slice";
+import { authLogin } from "@/lib/store/thunks/auth-thunk";
+import { fetchAllUsers } from "@/lib/store/thunks/user-thunk";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hook";
 import { signIn, useSession } from "next-auth/react";
 import Image from "next/image";
@@ -20,12 +20,17 @@ export default function Home() {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const { users } = useAppSelector((state) => state.user);
+  const { token } = useAppSelector((state) => state.auth);
 
   useEffect(() => {
     if (session?.user) {
       dispatch(fetchAllUsers()).unwrap();
     }
-  }, [session?.user, dispatch]);
+
+    if (!token) {
+      router.push("/");
+    }
+  }, [session?.user, dispatch, token, router]);
 
   useEffect(() => {
     if (session?.user) {

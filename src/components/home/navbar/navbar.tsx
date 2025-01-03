@@ -1,9 +1,18 @@
 "use client";
 
-import React, { useState } from "react";
+import { setActiveTab } from "@/lib/store/features/tweets-slice";
+import { useAppDispatch, useAppSelector } from "@/lib/store/hook";
+import React, { useEffect } from "react";
 
 const NavBar: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<"forYou" | "following">("forYou");
+  const dispatch = useAppDispatch();
+  const { activeTab } = useAppSelector((state) => state.tweets);
+
+  useEffect(() => {
+    const status =
+      JSON.parse(localStorage.getItem("status") || "forYou");
+    dispatch(setActiveTab(status));
+  }, [activeTab, dispatch]);
 
   return (
     <div className="flex items-center justify-around bg-black text-white h-16 border-b border-gray-700">
@@ -12,7 +21,10 @@ const NavBar: React.FC = () => {
           className={`relative text-sm font-semibold cursor-pointer ${
             activeTab === "forYou" ? "text-white" : "text-gray-400"
           }`}
-          onClick={() => setActiveTab("forYou")}
+          onClick={() => {
+            dispatch(setActiveTab("forYou"));
+            localStorage.setItem("status", JSON.stringify("forYou"));
+          }}
         >
           For you
           {activeTab === "forYou" && (
@@ -23,7 +35,10 @@ const NavBar: React.FC = () => {
           className={`relative text-sm font-semibold cursor-pointer ${
             activeTab === "following" ? "text-white" : "text-gray-400"
           }`}
-          onClick={() => setActiveTab("following")}
+          onClick={() => {
+            dispatch(setActiveTab("following"));
+            localStorage.setItem("status", JSON.stringify("following"));
+          }}
         >
           Following
           {activeTab === "following" && (

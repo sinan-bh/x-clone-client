@@ -4,6 +4,7 @@ import "./globals.css";
 import StoreProvider from "@/lib/store/store-provider";
 import SessionProvider from "@/lib/provider/session-provider";
 import { getServerSession } from "next-auth";
+import { ToastContainer } from "react-toastify";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,10 +33,17 @@ export default async function RootLayout({
         <link rel="icon" href="/images/x-logo.png" />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-black text-white`}
       >
         <StoreProvider>
-          <SessionProvider session={session}>{children}</SessionProvider>
+          <SessionProvider session={session}>
+            <ToastContainer
+              position="top-right"
+              autoClose={3000}
+              theme="dark"
+            />
+            {children}
+          </SessionProvider>
         </StoreProvider>
       </body>
     </html>

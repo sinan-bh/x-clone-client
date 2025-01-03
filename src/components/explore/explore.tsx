@@ -1,10 +1,30 @@
 "use client";
+import { useAppDispatch, useAppSelector } from "@/lib/store/hook";
+import { fetchSearchUsers } from "@/lib/store/thunks/chat-thunk";
+import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
 type ActiveTab = "forYou" | "trending" | "news" | "sports" | "entertainment";
 
 const Explore: React.FC = () => {
+  const { users } = useAppSelector((state) => state.chat);
   const [activeTab, setActiveTab] = useState<ActiveTab>("forYou");
+  const dispatch = useAppDispatch();
+  const router = useRouter();
+
+  const searchUsers = async (query: string) => {
+    try {
+      dispatch(fetchSearchUsers(query));
+    } catch (error) {
+      console.error("Error fetching user:", error);
+    }
+  };
+
+  const handleNavigation = (userName: string) => {
+    router.push(`/${userName}`);
+  };
 
   return (
     <div className="min-h-screen bg-black text-white flex">
@@ -27,7 +47,8 @@ const Explore: React.FC = () => {
             <input
               type="text"
               placeholder="Search"
-              className="w-full bg-gray-700 text-gray-300 py-2 px-4 rounded-3xl focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:pl-8"
+              onChange={(e) => searchUsers(e.target.value)}
+              className="w-full bg-slate-700 text-gray-300 py-2 px-12 rounded-3xl focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
         </div>
@@ -90,37 +111,78 @@ const Explore: React.FC = () => {
             </div>
           </nav>
         </header>
-        <div className="hide-scrollbar overflow-y-scroll h-[80vh]">
-          <div className="mb-6 ">
-            <div className="bg-gray-800 p-4 rounded-lg">
-              <h2 className="text-lg font-semibold">
-                Billboard Music Awards 2024
-              </h2>
-              <p className="text-gray-400 text-sm mt-1">
-                Presented by Marriott Bonvoy
-              </p>
-              <p className="text-gray-400 text-sm mt-1">
-                Thurs Dec 12 | Watch live at 8 PM ET
-              </p>
+        {!users || users.length < 1 ? (
+          <div className="hide-scrollbar overflow-y-scroll h-[80vh]">
+            <div className="mb-6 ">
+              <div className="bg-gray-800 p-4 rounded-lg">
+                <h2 className="text-lg font-semibold">
+                  Billboard Music Awards 2024
+                </h2>
+                <p className="text-gray-400 text-sm mt-1">
+                  Presented by Marriott Bonvoy
+                </p>
+                <p className="text-gray-400 text-sm mt-1">
+                  Thurs Dec 12 | Watch live at 8 PM ET
+                </p>
+              </div>
+            </div>
+
+            <div>
+              <h3 className="text-lg font-semibold mb-2">Trending in India</h3>
+              <div className="bg-gray-800 p-4 rounded-lg">
+                <p className="font-medium">#GukeshDing</p>
+                <p className="text-gray-400 text-sm">55.1K posts</p>
+              </div>
+
+              <div className="bg-gray-800 p-4 rounded-lg mt-4">
+                <p className="font-medium">#BoycottBollywood</p>
+                <p className="text-gray-400 text-sm">
+                  Entertainment · Trending
+                </p>
+              </div>
             </div>
           </div>
-
+        ) : (
           <div>
-            <h3 className="text-lg font-semibold mb-2">Trending in India</h3>
-            <div className="bg-gray-800 p-4 rounded-lg">
-              <p className="font-medium">#GukeshDing</p>
-              <p className="text-gray-400 text-sm">55.1K posts</p>
-            </div>
-
-            <div className="bg-gray-800 p-4 rounded-lg mt-4">
-              <p className="font-medium">#BoycottBollywood</p>
-              <p className="text-gray-400 text-sm">Entertainment · Trending</p>
-            </div>
+            {users.map((user) => (
+              <div
+                key={user._id}
+                className="border-b py-3 cursor-pointer border-gray-600 hide-scrollbar overflow-y-auto h-[80vh]"
+                onClick={() => handleNavigation(user.userName)}
+              >
+                <div>
+                  <div className="flex gap-4">
+                    <div>
+                      {user?.profilePicture && (
+                        <Image
+                          src={user?.profilePicture}
+                          alt="profile"
+                          width={50}
+                          height={50}
+                          className="rounded-full"
+                        />
+                      )}
+                    </div>
+                    <div>
+                      <div className="font-bold text-xl">
+                        {user?.name ? user.name : "Messages"}
+                      </div>
+                      <Link
+                        href={`/${user?.userName}`}
+                        className="text-gray-500 cursor-pointer hover:underline"
+                      >
+                        {user?.userName ? "@" + user.userName : ""}
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
-        </div>
+        )}
       </div>
 
-      <aside className="w-1/3 px-6 py-4 border-l border-gray-700 hidden md:block">
+      <aside className="w-1/2 px-6 py-4 border-l border-gray-700 hidden md:block">
         <h2 className="text-xl font-bold mb-4">Who to follow</h2>
 
         <div className="mb-4 flex items-center justify-between">
