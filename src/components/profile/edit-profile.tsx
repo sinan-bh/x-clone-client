@@ -7,7 +7,7 @@ import { useParams } from "next/navigation";
 import {
   fetchUserData,
   updateUserProfile,
-} from "@/lib/store/thunks/user-thunk"; // Import the updateUserProfile action
+} from "@/lib/store/thunks/user-thunk"; 
 import { useAppDispatch } from "@/lib/store/hook";
 import { toast } from "react-toastify";
 

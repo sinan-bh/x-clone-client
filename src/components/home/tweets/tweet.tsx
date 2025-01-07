@@ -9,7 +9,6 @@ import {
   FaBookmark,
   FaRegBookmark,
 } from "react-icons/fa";
-import { formatDistanceToNow, parseISO } from "date-fns";
 import Link from "next/link";
 import {
   fetchTweetById,
@@ -21,6 +20,7 @@ import Cookies from "js-cookie";
 import { Comment, UserDetails } from "@/lib/store/features/tweets-slice";
 import CommentBox from "./comment-box";
 import { socket } from "@/components/chat/chat-list";
+import { format } from "date-fns";
 
 export interface TweetProps {
   _id?: string;
@@ -37,6 +37,34 @@ export interface TweetProps {
 export type LoginedUser = {
   id?: string | undefined;
   profilePicture: string;
+};
+
+export const getTimeAgo = (time: string) => {
+  const messageDate = new Date(time);
+  const currentDate = new Date();
+
+  const diffInMilliseconds = currentDate.getTime() - messageDate.getTime();
+  const diffInMinutes = diffInMilliseconds / (1000 * 60);
+  const diffInHours = diffInMinutes / 60;
+  const diffInDays = diffInHours / 24;
+
+  if (diffInMinutes < 1) {
+    return "Now";
+  } else if (diffInMinutes < 60) {
+    return `${Math.floor(diffInMinutes)} minute${
+      Math.floor(diffInMinutes) > 1 ? "s" : ""
+    }`;
+  } else if (diffInHours < 24) {
+    return `${Math.floor(diffInHours)} hour${
+      Math.floor(diffInHours) > 1 ? "s" : ""
+    } `;
+  } else if (diffInDays < 1) {
+    return "Yesterday";
+  } else if (diffInDays < 2) {
+    return "2 days ";
+  } else {
+    return format(messageDate, "dd-MM-yyyy HH:mm");
+  }
 };
 
 const Tweet: React.FC<TweetProps> = ({
@@ -90,8 +118,9 @@ const Tweet: React.FC<TweetProps> = ({
       const user = JSON.parse(currentUser || "{}");
       const isLikedNow = response.post.likes.includes(user.id);
       setLiked(isLikedNow);
-
-      socket.emit("likes", { postId });
+      if (isLikedNow) {
+        socket.emit("likes", { postId, userId: user.id });
+      }
       setLikesCount(response.post.likes.length);
     } catch (error) {
       console.error("Error liking post:", error);
@@ -105,22 +134,6 @@ const Tweet: React.FC<TweetProps> = ({
   const handleSave = async (postId: string) => {
     await dispatch(savedPost(postId));
     setSave(!save);
-  };
-
-  const getTimeAgo = (time: string) => {
-    const postTime = parseISO(time);
-    const timeAgo = formatDistanceToNow(postTime, { addSuffix: true });
-
-    if (timeAgo.includes("day")) {
-      const daysAgo = formatDistanceToNow(postTime);
-      if (daysAgo === "1 day") {
-        return "Yesterday";
-      } else {
-        return daysAgo;
-      }
-    }
-
-    return timeAgo;
   };
 
   const handleCommand = (tweetId: string) => {

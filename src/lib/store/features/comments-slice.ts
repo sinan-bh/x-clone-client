@@ -9,6 +9,7 @@ export type Comment = {
   createdAt: string;
 };
 
+
 interface CommentState {
   comments: CommentData[] | null;
   pendign: boolean;
@@ -21,7 +22,7 @@ const initialState: CommentState = {
   err: null,
 };
 
-const tweetsSlice = createSlice({
+const commentSlice = createSlice({
   name: "tweets",
   initialState,
   reducers: {},
@@ -46,4 +47,4 @@ const tweetsSlice = createSlice({
   },
 });
 
-export default tweetsSlice.reducer;
+export default commentSlice.reducer;

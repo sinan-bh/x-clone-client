@@ -49,10 +49,18 @@ const Inbox: React.FC = () => {
         scrollToBottom();
       });
 
-      socket.on("receiveMessage", (message: Message) => {
-        dispatch(addMessage(message));
-        scrollToBottom();
-      });
+      socket.on(
+        "receiveMessage",
+        ({ message, socketId }: { message: Message; socketId: string }) => {
+          console.log(message);
+
+          console.log(socketId);
+          if (chatId === socketId) {
+            dispatch(addMessage(message));
+            scrollToBottom();
+          }
+        }
+      );
 
       return () => {
         socket.off("receiveMessage");
@@ -100,7 +108,6 @@ const Inbox: React.FC = () => {
         sender: loginedUser?.id,
         content: values.message,
       };
-      console.log(messageData);
       socket.emit("sendMessage", messageData);
       formik.resetForm();
     },

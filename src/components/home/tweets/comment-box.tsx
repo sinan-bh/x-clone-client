@@ -17,6 +17,7 @@ import { TweetData } from "@/lib/store/features/tweets-slice";
 import { createComment } from "@/lib/store/thunks/comments-thunk";
 import Image from "next/image";
 import { socket } from "@/components/chat/chat-list";
+import Cookies from "js-cookie";
 
 type CommentProps = {
   tweet: TweetData | null;
@@ -30,6 +31,8 @@ const CommentBox: React.FC<CommentProps> = ({ tweet, loginedUser }) => {
   const dispatch = useAppDispatch();
 
   const handleSubmit = () => {
+    const currentUser = Cookies.get("user");
+    const user = JSON.parse(currentUser || "{}");
     if (commentText.trim() === "") {
       toast.info("Comment cannot be empty");
       return;
@@ -38,7 +41,7 @@ const CommentBox: React.FC<CommentProps> = ({ tweet, loginedUser }) => {
       createComment({ postId: tweet?._id as string, text: commentText })
     ).unwrap();
 
-    socket.emit("comment", { postId: tweet?._id });
+    socket.emit("comment", { postId: tweet?._id, userId: user.id });
     toast.success(`Comment submitted successfully`);
     setCommentText("");
   };
