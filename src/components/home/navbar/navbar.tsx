@@ -15,7 +15,7 @@ const NavBar: React.FC = () => {
   }, [activeTab, dispatch]);
 
   return (
-    <div className="flex items-center justify-around bg-black text-white h-16 border-b border-gray-700">
+    <div className="mt-14 flex items-center justify-around bg-black text-white h-16 border-b border-gray-700 sm:mt-0">
       <div className="flex w-1/2 justify-between">
         <div
           className={`relative text-sm font-semibold cursor-pointer ${

@@ -131,9 +131,7 @@ const Inbox: React.FC = () => {
 
   return (
     <div className="flex flex-col h-screen border-l border-gray-600">
-      <div className="border-b border-gray-600 h-20 p-4">
-        <div>
-          <div className="flex gap-4">
+      <div className="border-b border-gray-600  p-4 mt-20 sm:mt-0 flex flex-col items-center gap-4 justify-center">
             <div>
               {userDetails?.profilePicture && (
                 <Image
@@ -156,8 +154,6 @@ const Inbox: React.FC = () => {
                 {userDetails?.userName ? "@" + userDetails.userName : ""}
               </Link>
             </div>
-          </div>
-        </div>
       </div>
       {!chatId ? (
         <div className="flex-1 overflow-y-auto p-4"></div>
@@ -193,7 +189,7 @@ const Inbox: React.FC = () => {
         </div>
       )}
 
-      <div className="p-4 border-t border-gray-600 mb-10 sm:mb-14 md:mb-0">
+      <div className="p-4 border-t border-gray-600 mb-14 sm:mb-14 md:mb-0">
         <form onSubmit={formik.handleSubmit} className="flex items-center">
           <input
             type="text"

@@ -35,7 +35,7 @@ const TweetList: React.FC = () => {
   return (
     <div className="bg-black min-h-screen text-white">
       {loading ? (
-        <div className="flex justify-center items-center h-[70vh] text-gray-400 ">
+        <div className="flex justify-center items-center  h-[70vh] text-gray-400 ">
           <CircularProgress size={60} />
         </div>
       ) : (

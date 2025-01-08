@@ -14,6 +14,7 @@ import Cookies from "js-cookie";
 import Image from "next/image";
 import Logout from "./logout";
 import { signOut } from "next-auth/react";
+import Header from "../home/navbar/phone-navbar";
 
 export type User = {
   id: string;
@@ -83,6 +84,10 @@ const Sidebar: React.FC = () => {
             </div>
           )}
         </div>
+      </div>
+
+      <div className="fixed md:hidden top-0 left-0 right-0 z-50">
+        <Header />
       </div>
 
       <div className="fixed bottom-0 left-0 right-0  flex justify-around items-center py-3 md:hidden bg-black">

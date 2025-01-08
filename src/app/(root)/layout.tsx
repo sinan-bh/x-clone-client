@@ -8,7 +8,7 @@ export default function Layout({
 }>) {
   return (
     <div className="flex h-screen text-white">
-      <div className="w-0 sm:w-1/6 z-50">
+      <div className="w-0  md:block sm:w-1/6 z-50">
         <Sidebar />
       </div>
       <div className="flex-1 overflow-hidden">{children}</div>
