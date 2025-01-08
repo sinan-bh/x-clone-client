@@ -159,9 +159,9 @@ const Inbox: React.FC = () => {
         <div className="flex-1 overflow-y-auto p-4"></div>
       ) : (
         <div className="flex-1 hide-scrollbar overflow-y-auto p-4">
-          {messages?.map((msg) => (
-            <div key={msg.timestamp} className="flex gap-2">
-              {msg.sender !== loginedUser?.id && (
+          {messages?.map((msg,i) => (
+            <div key={i} className="flex gap-2">
+              {msg?.sender !== loginedUser?.id && (
                 <div>
                   {userDetails?.profilePicture && (
                     <Image
@@ -176,12 +176,12 @@ const Inbox: React.FC = () => {
               )}
               <div
                 className={`p-2 max-w-[500px] ${
-                  msg.sender === loginedUser?.id
+                  msg?.sender === loginedUser?.id
                     ? "bg-blue-500 text-white ml-auto"
                     : "bg-gray-800 text-white"
                 } rounded-md mb-2 w-fit`}
               >
-                {msg.content}
+                {msg?.content}
               </div>
             </div>
           ))}
