@@ -51,7 +51,6 @@ export default function Notification() {
         createdNotification: NotificationData;
         userId: string;
       }) => {
-        console.log(createdNotification, "aaaa");
         if (userId === user.id) {
           dispatch(setAddNotificaiton(createdNotification));
           toast.info(
@@ -63,7 +62,6 @@ export default function Notification() {
   }, [dispatch]);
 
   const handleClick = (postId: string, id: string) => {
-    console.log(id);
     dispatch(readedNotification(id));
     const currentUser = Cookies.get("user");
     const user = JSON.parse(currentUser || "{}");
@@ -71,24 +69,24 @@ export default function Notification() {
   };
 
   return (
-    <div className="bg-black flex">
-      <div className="w-[83vw] sm:max-w-1/2">
+    <div className="bg-black flex flex-col md:flex-row">
+      <div className="w-full md:w-[83vw]">
         <div className="text-white text-2xl font-bold h-28 flex p-4 border-gray-600 border-b">
           Notifications
         </div>
         {!notifications || notifications.length < 1 ? (
-          <div className="flex min-h-screen flex-col items-center  max-w-full p-4 hide-scrollbar">
-            <div className="text-3xl font-extrabold">
+          <div className="flex min-h-screen flex-col items-center p-4 hide-scrollbar">
+            <div className="text-3xl font-extrabold text-center">
               Nothing to see here —
               <br /> yet
             </div>
-            <div className="text-lg pt-4 text-gray-500">
+            <div className="text-lg pt-4 text-gray-500 text-center">
               From likes to reposts and a whole lot more, this
               <br /> is where all the action happens.
             </div>
           </div>
         ) : (
-          <div className="overflow-y-auto  hide-scrollbar sm:max-h-[599px]">
+          <div className="overflow-y-auto hide-scrollbar max-h-[90vh]">
             {notifications?.map((notification, i) => (
               <div
                 className={`flex justify-around items-center border-b border-gray-600 h-16 cursor-pointer hover:bg-slate-950 ${
@@ -110,7 +108,7 @@ export default function Notification() {
                     />
                   </div>
                 )}
-                <div>
+                <div className="text-center">
                   {notification?.sender?.name} {notification?.message}
                 </div>
                 <div>
@@ -122,7 +120,7 @@ export default function Notification() {
           </div>
         )}
       </div>
-      <div className="hidden md:block sm:w-1/2">
+      <div className="hidden md:block md:w-1/2">
         <SearchSection />
       </div>
     </div>

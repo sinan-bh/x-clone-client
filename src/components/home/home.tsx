@@ -3,13 +3,18 @@ import NavBar from "@/components/home/navbar/navbar";
 import SearchSection from "@/components/home/search-section/search-section";
 import TweetList from "@/components/home/tweets/tweet-list";
 import PostInput from "./tweets/create-tweet";
+import Header from "./navbar/phone-navbar";
 
 export default function home() {
-
- return (
+  return (
     <div className="w-screen h-screen flex">
-      <div className="w-full sm:w-1/2 border-r border-gray-600 sticky">
-        <NavBar />
+      <div className="  sm:w-1/2 border-r border-gray-600 sticky">
+        <div className="">
+          <NavBar />
+        </div>
+        <div className="sm:hidden">
+          <Header />
+        </div>
         <div className="hide-scrollbar overflow-y-scroll w-full sm:w-full max-h-[91vh]">
           <PostInput />
           <TweetList />

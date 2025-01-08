@@ -210,7 +210,7 @@ const PostInput: React.FC = () => {
               onClick={() => setShowEmojiPicker(!showEmojiPicker)}
             />
             {showEmojiPicker && (
-              <div className="absolute  left-0 z-50">
+              <div className="absolute  -left-14 sm:left-0 z-50">
                 <EmojiPicker onEmojiClick={addEmoji} theme={Theme.DARK} />
               </div>
             )}

@@ -53,7 +53,7 @@ const CommentBox: React.FC<CommentProps> = ({ tweet, loginedUser }) => {
           <FaComment className="text-white" />{" "}
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[500px] bg-black">
+      <DialogContent className="sm:max-w-[500px] bg-black border-none">
         <DialogHeader>
           <DialogTitle>Post your reply</DialogTitle>
         </DialogHeader>

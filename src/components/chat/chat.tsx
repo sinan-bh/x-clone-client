@@ -193,7 +193,7 @@ const Inbox: React.FC = () => {
         </div>
       )}
 
-      <div className="p-4 border-t border-gray-600">
+      <div className="p-4 border-t border-gray-600 mb-10 sm:mb-14 md:mb-0">
         <form onSubmit={formik.handleSubmit} className="flex items-center">
           <input
             type="text"

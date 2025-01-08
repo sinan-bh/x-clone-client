@@ -85,7 +85,7 @@ const Sidebar: React.FC = () => {
         </div>
       </div>
 
-      <div className="fixed bottom-0 left-0 right-0  flex justify-around items-center py-3 md:hidden">
+      <div className="fixed bottom-0 left-0 right-0  flex justify-around items-center py-3 md:hidden bg-black">
         <Link href={"/home"}>
           <FaHome className="text-2xl cursor-pointer text-white hover:text-gray-500" />
         </Link>

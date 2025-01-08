@@ -6,6 +6,8 @@ export default function Layout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+
+
   return (
     <div className="flex h-screen text-white">
       <div className="w-2/6">

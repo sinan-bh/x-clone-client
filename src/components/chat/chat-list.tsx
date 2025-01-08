@@ -18,7 +18,7 @@ export const socket = io(process.env.NEXT_PUBLIC_SERVER_URL);
 export default function ChatList() {
   const { participants, users } = useAppSelector((state) => state.chat);
   const [loginedUser, setLoginedUser] = useState<LoginedUser | null>(null);
-    const dispatch = useAppDispatch();
+  const dispatch = useAppDispatch();
   const router = useRouter();
 
   useEffect(() => {
