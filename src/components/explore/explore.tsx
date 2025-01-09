@@ -4,23 +4,26 @@ import { fetchSearchUsers } from "@/lib/store/thunks/chat-thunk";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 type ActiveTab = "forYou" | "trending" | "news" | "sports" | "entertainment";
 
 const Explore: React.FC = () => {
   const { users } = useAppSelector((state) => state.chat);
   const [activeTab, setActiveTab] = useState<ActiveTab>("forYou");
+  const [query, setQuery] = useState<string>(""); // State for input value
   const dispatch = useAppDispatch();
   const router = useRouter();
 
-  const searchUsers = async (query: string) => {
-    try {
-      dispatch(fetchSearchUsers(query));
-    } catch (error) {
-      console.error("Error fetching user:", error);
-    }
-  };
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(() => {
+      if (query.trim()) {
+        dispatch(fetchSearchUsers(query));
+      }
+    }, 500);
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [query, dispatch]);
 
   const handleNavigation = (userName: string) => {
     router.push(`/${userName}`);
@@ -47,107 +50,40 @@ const Explore: React.FC = () => {
             <input
               type="text"
               placeholder="Search"
-              onChange={(e) => searchUsers(e.target.value)}
+              value={query} // Bind query state to input
+              onChange={(e) => setQuery(e.target.value)} // Update query state
               className="w-full bg-slate-700 text-gray-300 py-2 px-12 rounded-3xl focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
         </div>
         <header className="border-b border-gray-700 pb-4 pt-7 mb-6 max-w-full hide-scrollbar overflow-x-auto text-nowrap">
           <nav className="flex justify-between space-x-4 mt-2">
-            <div
-              className={`relative text-gray-400 font-medium cursor-pointer ${
-                activeTab === "forYou" ? "text-white" : "text-gray-400"
-              }`}
-              onClick={() => setActiveTab("forYou")}
-            >
-              For You
-              {activeTab === "forYou" && (
-                <div className="absolute left-0 right-0 h-1 bg-blue-500 rounded-t-md top-9"></div>
-              )}
-            </div>
-            <div
-              className={`relative text-gray-400 font-medium cursor-pointer ${
-                activeTab === "trending" ? "text-white" : "text-gray-400"
-              }`}
-              onClick={() => setActiveTab("trending")}
-            >
-              Trending
-              {activeTab === "trending" && (
-                <div className="absolute left-0 right-0 h-1 bg-blue-500 rounded-t-md top-9"></div>
-              )}
-            </div>
-            <div
-              className={`relative text-gray-400 font-medium cursor-pointer ${
-                activeTab === "news" ? "text-white" : "text-gray-400"
-              }`}
-              onClick={() => setActiveTab("news")}
-            >
-              News
-              {activeTab === "news" && (
-                <div className="absolute left-0 right-0 h-1 bg-blue-500 rounded-t-md top-9"></div>
-              )}
-            </div>
-            <div
-              className={`relative text-gray-400 font-medium cursor-pointer ${
-                activeTab === "sports" ? "text-white" : "text-gray-400"
-              }`}
-              onClick={() => setActiveTab("sports")}
-            >
-              Sports
-              {activeTab === "sports" && (
-                <div className="absolute left-0 right-0 h-1 bg-blue-500 rounded-t-md top-9"></div>
-              )}
-            </div>
-            <div
-              className={`relative text-gray-400 font-medium cursor-pointer ${
-                activeTab === "entertainment" ? "text-white" : "text-gray-400"
-              }`}
-              onClick={() => setActiveTab("entertainment")}
-            >
-              Entertainment
-              {activeTab === "entertainment" && (
-                <div className="absolute left-0 right-0 h-1 bg-blue-500 rounded-t-md top-9"></div>
-              )}
-            </div>
+            {["forYou", "trending", "news", "sports", "entertainment"].map(
+              (tab) => (
+                <div
+                  key={tab}
+                  className={`relative text-gray-400 font-medium cursor-pointer ${
+                    activeTab === tab ? "text-white" : "text-gray-400"
+                  }`}
+                  onClick={() => setActiveTab(tab as ActiveTab)}
+                >
+                  {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                  {activeTab === tab && (
+                    <div className="absolute left-0 right-0 h-1 bg-blue-500 rounded-t-md top-9"></div>
+                  )}
+                </div>
+              )
+            )}
           </nav>
         </header>
         {!users || users.length < 1 ? (
-          <div className="hide-scrollbar overflow-y-scroll h-[80vh]">
-            <div className="mb-6 ">
-              <div className="bg-gray-800 p-4 rounded-lg">
-                <h2 className="text-lg font-semibold">
-                  Billboard Music Awards 2024
-                </h2>
-                <p className="text-gray-400 text-sm mt-1">
-                  Presented by Marriott Bonvoy
-                </p>
-                <p className="text-gray-400 text-sm mt-1">
-                  Thurs Dec 12 | Watch live at 8 PM ET
-                </p>
-              </div>
-            </div>
-
-            <div>
-              <h3 className="text-lg font-semibold mb-2">Trending in India</h3>
-              <div className="bg-gray-800 p-4 rounded-lg">
-                <p className="font-medium">#GukeshDing</p>
-                <p className="text-gray-400 text-sm">55.1K posts</p>
-              </div>
-
-              <div className="bg-gray-800 p-4 rounded-lg mt-4">
-                <p className="font-medium">#BoycottBollywood</p>
-                <p className="text-gray-400 text-sm">
-                  Entertainment · Trending
-                </p>
-              </div>
-            </div>
-          </div>
+          <div></div>
         ) : (
-          <div>
+          <div className="hide-scrollbar overflow-y-auto h-[80vh]">
             {users.map((user) => (
               <div
                 key={user._id}
-                className="border-b py-3 cursor-pointer border-gray-600 hide-scrollbar overflow-y-auto h-[80vh]"
+                className="border-b py-3 cursor-pointer border-gray-600"
                 onClick={() => handleNavigation(user.userName)}
               >
                 <div>

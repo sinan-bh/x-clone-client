@@ -4,7 +4,7 @@ import { setSelectedUserId } from "@/lib/store/features/chat-slice";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hook";
 import {
   fetchParticipants,
-  fetchSearchUsers,
+  // fetchSearchUsers,
 } from "@/lib/store/thunks/chat-thunk";
 import React, { useEffect, useState } from "react";
 import Cookies from "js-cookie";
@@ -28,13 +28,13 @@ export default function ChatList() {
     setLoginedUser(user);
   }, [dispatch]);
 
-  const searchUsers = async (query: string) => {
-    try {
-      dispatch(fetchSearchUsers(query));
-    } catch (error) {
-      console.error("Error fetching user:", error);
-    }
-  };
+  // const searchUsers = async (query: string) => {
+  //   try {
+  //     dispatch(fetchSearchUsers(query));
+  //   } catch (error) {
+  //     console.error("Error fetching user:", error);
+  //   }
+  // };
 
   const handleUserSelect = async ({
     userId,
@@ -82,7 +82,7 @@ export default function ChatList() {
           <input
             type="text"
             placeholder="Search user..."
-            onChange={(e) => searchUsers(e.target.value)}
+            // onChange={(e) => searchUsers(e.target.value)}
             className="w-full p-2 bg-gray-900 text-white rounded-md"
           />
           <div className="overflow-y-auto h-[calc(100vh-150px)]">
