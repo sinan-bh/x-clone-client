@@ -39,7 +39,6 @@ const Inbox: React.FC = () => {
   useEffect(() => {
     if (chatId && userId) {
       router.refresh();
-      console.log(chatId);
       dispatch(fetchUserData(userId));
 
       socket.emit("joinRoom", { chatId });
@@ -52,9 +51,6 @@ const Inbox: React.FC = () => {
       socket.on(
         "receiveMessage",
         ({ message, socketId }: { message: Message; socketId: string }) => {
-          console.log(message);
-
-          console.log(socketId);
           if (chatId === socketId) {
             dispatch(addMessage(message));
             scrollToBottom();

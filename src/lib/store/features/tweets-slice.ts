@@ -145,8 +145,6 @@ const tweetsSlice = createSlice({
       .addCase(
         fetchTweetById.fulfilled,
         (state, action: PayloadAction<TweetData>) => {
-          console.log(action.payload);
-
           state.tweet = action.payload;
         }
       )

@@ -104,7 +104,6 @@ const Tweet: React.FC<TweetProps> = ({
     });
 
     socket.on("updatedComments", ({ postId, updatedComment }) => {
-      console.log(updatedComment, "uuu");
       if (postId === _id) {
         setCommentCount(updatedComment);
       }

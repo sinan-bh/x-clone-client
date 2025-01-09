@@ -68,8 +68,6 @@ export const loginUser = createAsyncThunk(
       const response = await Instance.post(`/auth/login`, credentials);
       const { data } = response;
       const userData = data.data;
-      console.log(userData);
-
       Cookies.set(
         "user",
         JSON.stringify({

@@ -81,7 +81,6 @@ export const savedPost = createAsyncThunk(
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
-      console.log(error.response);
       return rejectWithValue(
         error.response?.data || "Failed to fetch tweets"
       );
@@ -126,8 +125,6 @@ export const fetchTweetById = createAsyncThunk(
   async (postId: string, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.get(`/tweets/${postId}`);
-      console.log(response.data.data, "tweee");
-
       return response.data.data;
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
