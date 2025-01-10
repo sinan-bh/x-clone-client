@@ -34,6 +34,8 @@ export default function Home() {
 
   useEffect(() => {
     if (session?.user?.email) {
+      console.log(session.user.email, "session.user.email");
+      
       const userEmail = session.user.email;
       const isExisting = users?.some((user) => user.email === userEmail);
       if (isExisting) {
