@@ -100,12 +100,12 @@ export const authLogin = createAsyncThunk(
       Cookies.set(
         "user",
         JSON.stringify({
-          userName: userData.user.userName,
-          name: userData.user.name,
-          profilePicture: userData.user.profilePicture,
-          email: userData.user.email,
-          token: userData.token,
-          id: userData.user.id,
+          userName: userData?.user?.userName,
+          name: userData?.user?.name,
+          profilePicture: userData?.user?.profilePicture,
+          email: userData?.user?.email,
+          token: userData?.token,
+          id: userData?.user?.id,
         }),
         { expires: new Date(Date.now() + 1 * 24 * 7 * 60 * 60 * 1000) }
       );

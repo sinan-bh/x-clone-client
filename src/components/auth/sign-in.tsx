@@ -1,8 +1,7 @@
 "use client";
 
 import { authLogin, loginUser } from "@/lib/store/thunks/auth-thunk";
-import { fetchAllUsers } from "@/lib/store/thunks/user-thunk";
-import { useAppDispatch, useAppSelector } from "@/lib/store/hook";
+import { useAppDispatch } from "@/lib/store/hook";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
@@ -29,35 +28,31 @@ const SignIn = () => {
   const [isActive, setIsActive] = useState<boolean>(false);
   const { data: session } = useSession();
 
-  const { users } = useAppSelector((state) => state.user);
 
   useEffect(() => {
-    if (session?.user?.email) {
-      dispatch(fetchAllUsers()).unwrap();
-    }
-  }, [session?.user, dispatch]);
-
-  useEffect(() => {
-    if (session?.user?.email) {
-      const userEmail = session.user.email;
-      const isExisting = users?.some((user) => user.email === userEmail);
-      if (isExisting) {
-        dispatch(authLogin(userEmail as string)).unwrap();
-        toast.success("Sign In Successful");
-        router.push("/home");
-      } else {
-        localStorage.setItem(
-          "registration",
-          JSON.stringify({
-            name: session.user.name,
-            email: session.user.email,
-            image: session.user.image,
-          })
-        );
-        router.push("/verify-username");
-      }
-    }
-  }, [session?.user, users, dispatch, router]);
+     if (session?.user?.email) {
+       const userEmail = session.user.email;
+ 
+       const fetchData = async (userEmail: string) => {
+         const res = await dispatch(authLogin(userEmail as string)).unwrap();
+         if (res.message === "Login successful") {
+           router.push("/home");
+         } else if (res.message === "User not found") {
+           localStorage.setItem(
+             "registration",
+             JSON.stringify({
+               name: session?.user?.name,
+               email: session?.user?.email,
+               image: session?.user?.image,
+             })
+           );
+           router.push("/verify-username");
+         }
+       };
+ 
+       fetchData(userEmail as string);
+     }
+   }, [session?.user, dispatch, router]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;

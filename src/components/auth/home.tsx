@@ -1,8 +1,7 @@
 "use client";
 
 import { authLogin } from "@/lib/store/thunks/auth-thunk";
-import { fetchAllUsers } from "@/lib/store/thunks/user-thunk";
-import { useAppDispatch, useAppSelector } from "@/lib/store/hook";
+import { useAppDispatch } from "@/lib/store/hook";
 import { signIn, useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
@@ -19,44 +18,31 @@ export default function Home() {
   const { data: session } = useSession();
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const { users } = useAppSelector((state) => state.user);
-  const { token } = useAppSelector((state) => state.auth);
 
   useEffect(() => {
     if (session?.user?.email) {
-      dispatch(fetchAllUsers()).unwrap();
+      const userEmail = session.user.email;
+
+      const fetchData = async (userEmail: string) => {
+        const res = await dispatch(authLogin(userEmail as string)).unwrap();
+        if (res.message === "Login successful") {
+          router.push("/home");
+        } else if (res.message === "User not found") {
+          localStorage.setItem(
+            "registration",
+            JSON.stringify({
+              name: session?.user?.name,
+              email: session?.user?.email,
+              image: session?.user?.image,
+            })
+          );
+          router.push("/verify-username");
+        }
+      };
+
+      fetchData(userEmail as string);
     }
-
-    if (!token) {
-      router.push("/");
-    }
-  }, [session?.user, dispatch, token, router]);
-
-  const userEmail = session?.user?.email;
-  const isExisting = users?.some((user) => user?.email === userEmail);
-
-  useEffect(() => {
-    if (session?.user?.email) {
-      console.log(session.user.email, "session.user.email");
-
-      console.log(isExisting, "isExisting");
-
-      if (isExisting) {
-        dispatch(authLogin(userEmail as string)).unwrap();
-        router.push("/home");
-      } else {
-        localStorage.setItem(
-          "registration",
-          JSON.stringify({
-            name: session.user.name,
-            email: session.user.email,
-            image: session.user.image,
-          })
-        );
-        router.push("/verify-username");
-      }
-    }
-  }, [session?.user, users, dispatch, router, isExisting, userEmail]);
+  }, [session?.user, dispatch, router]);
 
   return (
     <div className="flex flex-col md:flex-row h-screen">
