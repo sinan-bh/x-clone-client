@@ -38,6 +38,8 @@ export default function Home() {
       
       const userEmail = session.user.email;
       const isExisting = users?.some((user) => user.email === userEmail);
+      console.log(isExisting, "isExisting");
+      
       if (isExisting) {
         dispatch(authLogin(userEmail as string)).unwrap();
         router.push("/home");
