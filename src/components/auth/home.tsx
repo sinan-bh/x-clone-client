@@ -37,7 +37,7 @@ export default function Home() {
       console.log(session.user.email, "session.user.email");
       
       const userEmail = session?.user?.email;
-      const isExisting = users?.some((user) => user.email === userEmail);
+      const isExisting = users?.some((user) => user?.email === userEmail);
       console.log(isExisting, "isExisting");
       
       if (isExisting) {
