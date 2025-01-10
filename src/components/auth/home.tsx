@@ -32,14 +32,15 @@ export default function Home() {
     }
   }, [session?.user, dispatch, token, router]);
 
+  const userEmail = session?.user?.email;
+  const isExisting = users?.some((user) => user?.email === userEmail);
+
   useEffect(() => {
     if (session?.user?.email) {
       console.log(session.user.email, "session.user.email");
-      window.location.reload();
-      const userEmail = session?.user?.email;
-      const isExisting = users?.some((user) => user?.email === userEmail);
+
       console.log(isExisting, "isExisting");
-      
+
       if (isExisting) {
         dispatch(authLogin(userEmail as string)).unwrap();
         router.push("/home");
@@ -55,7 +56,7 @@ export default function Home() {
         router.push("/verify-username");
       }
     }
-  }, [session?.user, users, dispatch, router]);
+  }, [session?.user, users, dispatch, router, isExisting, userEmail]);
 
   return (
     <div className="flex flex-col md:flex-row h-screen">
