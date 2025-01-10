@@ -38,7 +38,7 @@ const SignIn = () => {
   }, [session?.user, dispatch]);
 
   useEffect(() => {
-    if (session?.user) {
+    if (session?.user?.email) {
       const userEmail = session.user.email;
       const isExisting = users?.some((user) => user.email === userEmail);
       if (isExisting) {

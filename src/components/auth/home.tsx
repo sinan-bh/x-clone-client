@@ -33,7 +33,7 @@ export default function Home() {
   }, [session?.user, dispatch, token, router]);
 
   useEffect(() => {
-    if (session?.user) {
+    if (session?.user?.email) {
       const userEmail = session.user.email;
       const isExisting = users?.some((user) => user.email === userEmail);
       if (isExisting) {
