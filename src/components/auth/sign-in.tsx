@@ -32,7 +32,7 @@ const SignIn = () => {
   const { users } = useAppSelector((state) => state.user);
 
   useEffect(() => {
-    if (session?.user) {
+    if (session?.user?.email) {
       dispatch(fetchAllUsers()).unwrap();
     }
   }, [session?.user, dispatch]);

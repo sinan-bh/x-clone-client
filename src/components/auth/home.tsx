@@ -23,7 +23,7 @@ export default function Home() {
   const { token } = useAppSelector((state) => state.auth);
 
   useEffect(() => {
-    if (session?.user) {
+    if (session?.user?.email) {
       dispatch(fetchAllUsers()).unwrap();
     }
 
