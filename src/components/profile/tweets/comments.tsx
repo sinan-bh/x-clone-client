@@ -1,5 +1,5 @@
 import Tweet from "@/components/home/tweets/tweet";
-import { CommentData } from "@/lib/store/features/tweets-slice";
+import { CommentData } from "@/utils/types/types";
 import Image from "next/image";
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";

@@ -5,34 +5,9 @@ import {
   fetchUserData,
   toggleFollow,
 } from "../thunks/user-thunk";
+import { FollowUser, User } from "@/utils/types/types";
 
-export type FollowUser = {
-  _id?: string;
-  name?: string | undefined;
-  profilePicture?: string;
-  userName?: string;
-  bio?: string;
-  followers?: [];
-  following?: [];
-};
 
-interface User {
-  _id: string;
-  createdAt: string;
-  email: string;
-  name: string;
-  password: string;
-  profilePicture: string;
-  bgImage: string;
-  updatedAt: string;
-  userName: string;
-  followers: FollowUser[];
-  following: FollowUser[];
-  bio?: string;
-  location?: string;
-  web?: string;
-  tweets: string[];
-}
 
 interface UserState {
   users: User[] | null;

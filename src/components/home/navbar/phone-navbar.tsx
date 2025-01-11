@@ -3,7 +3,6 @@
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import Cookies from "js-cookie";
-import { UserDetails } from "@/lib/store/features/tweets-slice";
 import Link from "next/link";
 import { signOut } from "next-auth/react";
 import { FaUser, FaBook, FaLightbulb, FaSignOutAlt } from "react-icons/fa";
@@ -15,6 +14,7 @@ import {
 } from "react-icons/fa6";
 import { IoSettingsSharp } from "react-icons/io5";
 import Logout from "@/components/side-bar/logout";
+import { UserDetails } from "@/utils/types/types";
 
 const Header: React.FC = () => {
   const [showLogoutPopup, setShowLogoutPopup] = useState(false);

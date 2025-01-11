@@ -10,11 +10,11 @@ import { useRouter } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hook";
 import { toast } from "react-toastify";
 import {
-  NotificationData,
   setAddNotificaiton,
   setNotification,
 } from "@/lib/store/features/notification-slice";
 import { readedNotification } from "@/lib/store/thunks/notification-thunk";
+import { NotificationData } from "@/utils/types/types";
 
 export default function Notification() {
   const dispatch = useAppDispatch();

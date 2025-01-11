@@ -6,8 +6,8 @@ import {
   // fetchChat,
   // createChat,
 } from "../thunks/chat-thunk";
-import { UserDetails } from "./tweets-slice";
 import { Message } from "@/components/chat/chat";
+import { UserDetails } from "@/utils/types/types";
 
 // Define the ChatSlice type
 type ChatSlice = {

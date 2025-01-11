@@ -13,11 +13,11 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { FaComment } from "react-icons/fa";
 import { useAppDispatch } from "@/lib/store/hook";
-import { TweetData } from "@/lib/store/features/tweets-slice";
 import { createComment } from "@/lib/store/thunks/comments-thunk";
 import Image from "next/image";
 import { socket } from "@/components/chat/chat-list";
 import Cookies from "js-cookie";
+import { TweetData } from "@/utils/types/types";
 
 type CommentProps = {
   tweet: TweetData | null;

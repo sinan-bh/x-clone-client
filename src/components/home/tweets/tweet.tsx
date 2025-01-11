@@ -17,10 +17,10 @@ import {
 } from "@/lib/store/thunks/tweet-thunk";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hook";
 import Cookies from "js-cookie";
-import { Comment, UserDetails } from "@/lib/store/features/tweets-slice";
 import CommentBox from "./comment-box";
 import { socket } from "@/components/chat/chat-list";
 import { format } from "date-fns";
+import { Comment, UserDetails } from "@/utils/types/types";
 
 export interface TweetProps {
   _id?: string;

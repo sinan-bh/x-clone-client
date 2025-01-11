@@ -6,43 +6,9 @@ import {
   fetchTweets,
   fetchUserTweet,
 } from "../thunks/tweet-thunk";
+import { CommentData, TweetData } from "@/utils/types/types";
 
-export type UserDetails = {
-  _id: string;
-  name: string;
-  userName: string;
-  email?: string;
-  profilePicture?: string;
-  following?: string[];
-  followers?: string[];
-  createdAt?: string;
-};
 
-export type Comment = {
-  _id: string;
-  user: UserDetails;
-  text: string;
-  createdAt: string;
-};
-
-export interface TweetData {
-  _id: string;
-  user: UserDetails;
-  text: string;
-  media?: string[];
-  likes: string[];
-  saved: string[];
-  comments: Comment[];
-  reposts: string[];
-  createdAt: string;
-}
-
-export interface CommentData {
-  _id: string;
-  user: UserDetails;
-  tweet: TweetData[];
-  text: string;
-}
 
 interface TweetsState {
   tweets: TweetData[];

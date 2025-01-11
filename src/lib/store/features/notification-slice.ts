@@ -1,18 +1,9 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { UserDetails } from "./tweets-slice";
 import { fetchNotification } from "../thunks/notification-thunk";
+import { NotificationData } from "@/utils/types/types";
 
 
-export type NotificationData = {
-  _id: string;
-  sender: UserDetails;
-  receiver: UserDetails;
-  reference: string;
-  createdAt: string;
-  message: string;
-  image: string;
-  isRead: boolean;
-};
+
 
 interface CommentState {
   notifications: NotificationData[] | null;

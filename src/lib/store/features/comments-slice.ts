@@ -1,13 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { fetchComments } from "../thunks/comments-thunk";
-import { CommentData, UserDetails } from "./tweets-slice";
+import { CommentData } from "@/utils/types/types";
 
-export type Comment = {
-  _id: string;
-  user: UserDetails;
-  text: string;
-  createdAt: string;
-};
 
 
 interface CommentState {
