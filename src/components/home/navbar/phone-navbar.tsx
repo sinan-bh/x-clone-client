@@ -73,7 +73,7 @@ const Header: React.FC = () => {
       </div>
 
       {isDropdownOpen && (
-        <div className="absolute h-screen top-20 left-0 w-64 bg-black text-white shadow-lg rounded-lg">
+        <div className="absolute max-h-[80vh] top-20 left-0 w-64 bg-black text-white shadow-lg rounded-lg overflow-y-auto hide-scrollbar">
           <div className="p-4 border-b border-gray-700">
             <div className="flex items-center mb-2">
               <div className="text-xl">
