@@ -29,9 +29,6 @@ export default async function RootLayout({
   const session = await getServerSession();
   return (
     <html lang="en">
-      <head>
-        <link rel="icon" href="/images/x-logo.png" />
-      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-black text-white`}
       >

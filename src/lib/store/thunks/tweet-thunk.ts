@@ -1,6 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axiosInstance from "@/utils/axios";
-import { TweetData } from "../features/tweets-slice";
+import { TweetData } from "@/utils/types/types";
 
 // create Tweet
 export const createTweet = createAsyncThunk(
