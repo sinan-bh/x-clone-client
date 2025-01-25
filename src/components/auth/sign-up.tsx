@@ -55,31 +55,32 @@ const Register = () => {
 
   const { data: session } = useSession();
 
+  useEffect(() => {
+    if (session?.user?.email) {
+      const userEmail = session.user.email;
 
-   useEffect(() => {
-      if (session?.user?.email) {
-        const userEmail = session.user.email;
-  
-        const fetchData = async (userEmail: string) => {
-          const res = await dispatch(authLogin(userEmail as string)).unwrap();
-          if (res.message === "Login successful") {
-            router.push("/home");
-          } else if (res.message === "User not found") {
-            localStorage.setItem(
-              "registration",
-              JSON.stringify({
-                name: session?.user?.name,
-                email: session?.user?.email,
-                image: session?.user?.image,
-              })
-            );
-            router.push("/verify-username");
-          }
-        };
-  
-        fetchData(userEmail as string);
-      }
-    }, [session?.user, dispatch, router]);
+      const fetchData = async (userEmail: string) => {
+        const res = await dispatch(authLogin(userEmail as string)).unwrap();
+        if (res.message === "Login successful") {
+          localStorage.setItem("loginedUser", JSON.stringify(true));
+          localStorage.setItem("status", JSON.stringify("forYou"));
+          router.push("/home");
+        } else if (res.message === "User not found") {
+          localStorage.setItem(
+            "registration",
+            JSON.stringify({
+              name: session?.user?.name,
+              email: session?.user?.email,
+              image: session?.user?.image,
+            })
+          );
+          router.push("/verify-username");
+        }
+      };
+
+      fetchData(userEmail as string);
+    }
+  }, [session?.user, dispatch, router]);
 
   return (
     <div className="min-h-screen flex justify-center items-center bg-gray-800 p-4">

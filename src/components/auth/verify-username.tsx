@@ -57,6 +57,8 @@ export default function VerifyUserName() {
         })
       ).unwrap();
       toast.success("Sign In Successful");
+      localStorage.setItem("loginedUser", JSON.stringify(true));
+      localStorage.setItem("status", JSON.stringify("forYou"));
       router.push("/signin");
     } catch (err) {
       setError((err as string) && "User name already existing");

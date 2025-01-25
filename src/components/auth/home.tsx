@@ -26,6 +26,8 @@ export default function Home() {
       const fetchData = async (userEmail: string) => {
         const res = await dispatch(authLogin(userEmail as string)).unwrap();
         if (res.message === "Login successful") {
+          localStorage.setItem("loginedUser", JSON.stringify(true));
+          localStorage.setItem("status", JSON.stringify("forYou"));
           router.push("/home");
         } else if (res.message === "User not found") {
           localStorage.setItem(
