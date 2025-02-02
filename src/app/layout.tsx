@@ -5,6 +5,7 @@ import StoreProvider from "@/lib/store/store-provider";
 import SessionProvider from "@/lib/provider/session-provider";
 import { getServerSession } from "next-auth";
 import { ToastContainer } from "react-toastify";
+import ReactQueryProvider from "@/lib/provider/qoury-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -27,21 +28,24 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const session = await getServerSession();
+
   return (
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-black text-white`}
       >
-        <StoreProvider>
-          <SessionProvider session={session}>
-            <ToastContainer
-              position="top-right"
-              autoClose={3000}
-              theme="dark"
-            />
-            {children}
-          </SessionProvider>
-        </StoreProvider>
+        <ReactQueryProvider>
+          <StoreProvider>
+            <SessionProvider session={session}>
+              <ToastContainer
+                position="top-right"
+                autoClose={3000}
+                theme="dark"
+              />
+              {children}
+            </SessionProvider>
+          </StoreProvider>
+        </ReactQueryProvider>
       </body>
     </html>
   );

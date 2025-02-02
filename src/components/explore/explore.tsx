@@ -1,30 +1,20 @@
 "use client";
-import { useAppDispatch, useAppSelector } from "@/lib/store/hook";
-import { fetchSearchUsers } from "@/lib/store/thunks/chat-thunk";
+import useDebounce from "@/lib/hooks/useDebounce";
+import { useAppSelector } from "@/lib/store/hook";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
 type ActiveTab = "forYou" | "trending" | "news" | "sports" | "entertainment";
 
 const Explore: React.FC = () => {
   const { users } = useAppSelector((state) => state.chat);
   const [activeTab, setActiveTab] = useState<ActiveTab>("forYou");
-  const [query, setQuery] = useState<string>(""); // State for input value
-  const dispatch = useAppDispatch();
+  const [query, setQuery] = useState<string>(""); 
   const router = useRouter();
-
-  useEffect(() => {
-    const delayDebounceFn = setTimeout(() => {
-      if (query.trim()) {
-        dispatch(fetchSearchUsers(query));
-      }
-    }, 500);
-
-    return () => clearTimeout(delayDebounceFn);
-  }, [query, dispatch]);
-
+  
+  useDebounce({ query });
   const handleNavigation = (userName: string) => {
     router.push(`/${userName}`);
   };

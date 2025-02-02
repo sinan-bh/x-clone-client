@@ -5,13 +5,15 @@ import Tweet from "@/components/home/tweets/tweet";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hook";
 import {
   fetchFollowingUserPost,
-  fetchTweets,
 } from "@/lib/store/thunks/tweet-thunk";
 import { CircularProgress } from "@mui/material";
+import { TweetData } from "@/utils/types/types";
+import { useQuery } from "@tanstack/react-query";
+import axiosInstance from "@/utils/axios";
 
 const TweetList: React.FC = () => {
   const dispatch = useAppDispatch();
-  const { tweets, followingTweets, activeTab, loading , error} = useAppSelector(
+  const { followingTweets, activeTab,  error} = useAppSelector(
     (state) => state.tweets
   );
 
@@ -21,12 +23,26 @@ const TweetList: React.FC = () => {
     setIsStatus(status);
   }, [activeTab]);
 
+  const fetchTweets = async (): Promise<TweetData[]> => {
+    const res = await axiosInstance.get("/tweets");    
+    if (res.data) {      
+      return res.data.data;
+    } else {
+      throw new Error("Failed to fetch tweets");
+    }
+  };
+
+  const {data, isLoading} = useQuery<TweetData[], Error>({
+    queryKey: ["tweets"],
+    queryFn: fetchTweets,
+  })
+  
+
   useEffect(() => {
-    dispatch(fetchTweets());
     dispatch(fetchFollowingUserPost());
   }, [activeTab, dispatch]);
 
-  const posts = isStatus === "forYou" ? tweets : followingTweets;
+  const posts = isStatus === "forYou" ? data : followingTweets;
 
   if (error) {
     return(<div>{error}</div>)
@@ -34,7 +50,7 @@ const TweetList: React.FC = () => {
 
   return (
     <div className="bg-black min-h-screen text-white">
-      {loading ? (
+      {isLoading ? (
         <div className="flex justify-center items-center  h-[70vh] text-gray-400 ">
           <CircularProgress size={60} />
         </div>
